@@ -1,0 +1,25 @@
+# Archivos generados por el compilador de Java
+*.class
+
+# Archivos de paquetes
+*.jar
+*.war
+*.ear
+
+# Directorio de salida de Maven
+/target/
+
+# Archivos de log
+*.log
+
+# Archivos de crash de la JVM
+hs_err_pid*
+
+# Archivos de configuración de IDEs
+
+# IntelliJ
+.idea/
+*.iml
+
+# VS Code
+.vscode/
