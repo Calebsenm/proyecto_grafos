@@ -1,34 +1,41 @@
 package com.grafos_colombia;
 
+import java.io.IOException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-
 /**
  * JavaFX App
  */
 public class App extends Application {
 
-    private static Scene scene;
-
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("main"), 640, 480);
-        stage.setScene(scene);
-        stage.show();
-    }
-
-    static void setRoot(String fxml) throws IOException {
-        scene.setRoot(loadFXML(fxml));
-    }
-
-    private static Parent loadFXML(String fxml) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
-        return fxmlLoader.load();
+        
+        try {
+            // Load FXML from the correct path
+            Parent root = FXMLLoader.load(getClass().getResource("/com/grafos_colombia/main.fxml"));
+            Scene scene = new Scene(root, 1200, 800); // Set initial size
+            stage.setTitle("Ruta más corta con Dijkstra - Colombia");
+            stage.setScene(scene);
+            stage.setMinWidth(800);
+            stage.setMinHeight(600);
+            stage.show();
+        } catch (IOException e) {
+            System.err.println("Error loading FXML: " + e.getMessage());
+            e.printStackTrace();
+            
+            // Show a simple error scene if FXML fails to load
+            javafx.scene.control.Label errorLabel = new javafx.scene.control.Label("Error loading application: " + e.getMessage());
+            errorLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: red;");
+            Scene errorScene = new Scene(new javafx.scene.layout.StackPane(errorLabel), 400, 200);
+            stage.setTitle("Error - Dijkstra App");
+            stage.setScene(errorScene);
+            stage.show();
+        }
     }
 
     public static void main(String[] args) {

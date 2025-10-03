@@ -71,16 +71,13 @@ public class GraphView {
     private static final Color BACKGROUND_COLOR = Color.web("#ecf0f1");
 
     public GraphView(Canvas canvas) {
-        System.out.println("🔧 GraphView constructor llamado con canvas: " + canvas);
         this.canvas = canvas;
         this.gc = canvas.getGraphicsContext2D();
         this.nodes = new ArrayList<>();
         this.edges = new ArrayList<>();
         this.nodeMap = new HashMap<>();
 
-        System.out.println("✅ GraphView constructor completado");
         setupEventHandlers();
-        System.out.println("✅ Event handlers configurados");
     }
 
     /**
@@ -90,8 +87,6 @@ public class GraphView {
      * @param edges
      */
     public void initializeGraph(List<GraphNode> nodes, List<GraphEdge> edges) {
-        System.out.println("🔧 initializeGraph llamado con " + nodes.size() + " nodos y " + edges.size() + " aristas");
-        
         this.nodes = new ArrayList<>(nodes);
         this.edges = new ArrayList<>(edges);
         this.nodeMap.clear();
@@ -101,12 +96,8 @@ public class GraphView {
             nodeMap.put(node.getId(), node);
         }
 
-        System.out.println("✅ NodeMap construido con " + nodeMap.size() + " entradas");
-
         // Initialize positions based on current layout type
-        System.out.println("🔧 Aplicando layout: " + currentLayout);
         applyLayout();
-        System.out.println("✅ Layout aplicado");
     }
 
     /**
@@ -473,9 +464,6 @@ public class GraphView {
      * Render the graph
      */
     public void render() {
-        System.out.println("🎨 Render llamado - Canvas: " + canvas.getWidth() + "x" + canvas.getHeight() + 
-                          ", Nodos: " + nodes.size() + ", Aristas: " + edges.size());
-        
         // Clear canvas
         gc.setFill(BACKGROUND_COLOR);
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -486,11 +474,9 @@ public class GraphView {
         gc.scale(viewportZoom, viewportZoom);
 
         // Draw edges first (so they appear behind nodes)
-        System.out.println("🎨 Dibujando " + edges.size() + " aristas");
         drawEdges();
 
         // Draw nodes
-        System.out.println("🎨 Dibujando " + nodes.size() + " nodos");
         drawNodes();
 
         // Restore transformations
@@ -498,8 +484,6 @@ public class GraphView {
 
         // Draw UI elements (not affected by viewport)
         drawUI();
-        
-        System.out.println("✅ Render completado");
     }
 
     /**

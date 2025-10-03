@@ -1,7 +1,7 @@
 package com.grafos_colombia.algorithm;
 
+import com.grafos_colombia.graph.Node;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -10,10 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
-
-import com.grafos_colombia.graph.Node;
-
-import javafx.util.Pair;
 
 public class Dijkstra {
 
@@ -30,32 +26,37 @@ public class Dijkstra {
 
         dist.put(start, 0.0);
 
-        PriorityQueue<Node> pq = new PriorityQueue<>(Comparator.comparingDouble(n -> n.weight));
+        PriorityQueue<Node> pq = new PriorityQueue<>(Comparator.comparingDouble(n -> n.getWeight()));
         pq.add(new Node(start, 0.0));
 
         while (!pq.isEmpty()) {
             Node current = pq.poll();
-            String u = current.value;
-            double d = current.weight;
+            String u = current.getValue();
+            double d = current.getWeight();
 
-            if (visited.contains(u)) continue;
+            if (visited.contains(u)) {
+                continue;
+            }
             visited.add(u);
 
-            if (u.equals(end)) break; // ya llegamos al destino
-
-            if (d > dist.get(u)) continue;
+            if (u.equals(end)) {
+                break; // ya llegamos al destino
+            }
+            if (d > dist.get(u)) {
+                continue;
+            }
 
             for (Node neighbor : adjList.getOrDefault(u, new ArrayList<>())) {
-                double newDist = dist.get(u) + neighbor.weight;
-                if (newDist < dist.get(neighbor.value)) {
-                    dist.put(neighbor.value, newDist);
-                    prev.put(neighbor.value, u);
-                    pq.add(new Node(neighbor.value, newDist));
+                double newDist = dist.get(u) + neighbor.getWeight();
+                if (newDist < dist.get(neighbor.getValue())) {
+                    dist.put(neighbor.getValue(), newDist);
+                    prev.put(neighbor.getValue(), u);
+                    pq.add(new Node(neighbor.getValue(), newDist));
                 }
             }
         }
 
-         // reconstruir el camino
+        // reconstruir el camino
         List<String> path = new ArrayList<>();
         String at = end;
         if (dist.get(end) != Double.POSITIVE_INFINITY) {

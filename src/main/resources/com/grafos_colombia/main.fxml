@@ -1,16 +1,140 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
-<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.grafos_colombia.controller.mainController">
-    <children>
-        <Label text="Main" />
-        <Button fx:id="click" text="run" onAction="#run_distra" />
-    </children>
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-    </padding>
-</VBox>
+<BorderPane xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.grafos_colombia.controller.MainController_">
+    
+    <!-- Top: Title Bar -->
+    <top>
+        <VBox alignment="CENTER" style="-fx-background-color: #2c3e50;">
+            <Label style="-fx-text-fill: white; -fx-font-size: 24px; -fx-font-weight: bold;" text="Ruta más corta con Dijkstra - Colombia" />
+            <Label style="-fx-text-fill: #bdc3c7; -fx-font-size: 14px;" text="Visualización de Grafos para Rutas en Colombia" />
+        </VBox>
+    </top>
+    
+    <!-- Left: Input Panel -->
+    <left>
+        <VBox prefHeight="551.0" prefWidth="350.0" spacing="15.0" style="-fx-background-color: #ecf0f1; -fx-padding: 20;">
+            
+            <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Configuración de Ruta" />
+            
+            <Separator />
+            
+            <Label style="-fx-font-weight: bold;" text="Lugar Origen:" />
+            <TextField fx:id="originFilterField" promptText="🔍 Filtrar lugares origen..." onKeyReleased="#filterOriginComboBox" style="-fx-background-color: #f8f9fa; -fx-border-color: #dee2e6; -fx-border-radius: 4;" />
+            <ComboBox fx:id="originComboBox" promptText="Seleccione lugar origen..." editable="false" />
+            
+            <Label style="-fx-font-weight: bold;" text="Lugar Destino:" />
+            <TextField fx:id="destinationFilterField" promptText="🔍 Filtrar lugares destino..." onKeyReleased="#filterDestinationComboBox" style="-fx-background-color: #f8f9fa; -fx-border-color: #dee2e6; -fx-border-radius: 4;" />
+            <ComboBox fx:id="destinationComboBox" promptText="Seleccione lugar destino..." editable="false" />
+            
+            <HBox alignment="CENTER" spacing="10.0">
+                <Button fx:id="calculateButton" onAction="#calculateShortestPath" prefWidth="120" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold;" text="Calcular Ruta" />
+                <Button fx:id="clearButton" onAction="#clearResults" prefWidth="80" style="-fx-background-color: #e74c3c; -fx-text-fill: white;" text="Limpiar" />
+            </HBox>
+            
+            <Separator />
+            
+            <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Controles de Grafo" />
+            
+            <Button fx:id="loadExampleButton" onAction="#loadExampleGraph" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;" text="Cargar Grafo Ejemplo" />
+            
+            <Button fx:id="loadDatabaseButton" onAction="#loadDatabaseGraph" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold;" text="Cargar Grafo desde BD" />
+            
+            <Button fx:id="toggleLabelsButton" onAction="#toggleEdgeLabels" style="-fx-background-color: #f39c12; -fx-text-fill: white;" text="Mostrar/Ocultar Etiquetas" />
+            
+            <Separator />
+            
+            <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Tipos de Layout" />
+            
+            <HBox alignment="CENTER" spacing="5.0">
+                <Button fx:id="geographicLayoutButton" onAction="#setGeographicLayout" prefWidth="80" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;" text="🗺️ Geo" />
+                <Button fx:id="circularLayoutButton" onAction="#setCircularLayout" prefWidth="80" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold;" text="⭕ Circ" />
+                <Button fx:id="hierarchicalLayoutButton" onAction="#setHierarchicalLayout" prefWidth="80" style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-font-weight: bold;" text="📊 Hier" />
+                <Button fx:id="forceLayoutButton" onAction="#setForceLayout" prefWidth="80" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold;" text="🌀 Fuer" />
+            </HBox>
+                      
+        </VBox>
+    </left>
+    
+    <!-- Right: Controls Panel -->
+    <right>
+        <VBox prefHeight="551.0" prefWidth="280.0" spacing="15.0" style="-fx-background-color: #ecf0f1; -fx-padding: 20;">
+            
+            <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Controles de Vista" />
+            
+            <Separator />
+            
+            <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Gestión de Rutas" />
+            
+            <Button fx:id="showHistoryButton" onAction="#showRouteHistory" style="-fx-background-color: #9b59b6; -fx-text-fill: white;" text="Ver Historial de Rutas" />
+            
+            <Button fx:id="clearCacheButton" onAction="#clearRouteCache" style="-fx-background-color: #e67e22; -fx-text-fill: white;" text="Limpiar Cache de Rutas" />
+            
+            <Separator />
+            
+            <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Controles de Zoom" />
+            
+            <HBox alignment="CENTER" spacing="10.0">
+                <Button fx:id="zoomInButton" onAction="#zoomIn" prefWidth="70" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;" text="🔍+" />
+                <Button fx:id="zoomOutButton" onAction="#zoomOut" prefWidth="70" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold;" text="🔍-" />
+                <Button fx:id="resetZoomButton" onAction="#resetZoom" prefWidth="70" style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-font-weight: bold;" text="🏠" />
+            </HBox>
+            
+            <Label style="-fx-font-size: 11px; -fx-text-fill: #7f8c8d;" text="💡 Usa la rueda del mouse para hacer zoom y arrastra para mover el mapa" wrapText="true" />
+            
+            <Separator />
+            
+            <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Información del Sistema" />
+            
+            <Label fx:id="databaseStatusLabel" style="-fx-font-size: 12px; -fx-text-fill: #27ae60; -fx-font-weight: bold;" text="🟢 Base de datos conectada" wrapText="true" />
+            
+            <Label fx:id="cacheStatusLabel" style="-fx-font-size: 12px; -fx-text-fill: #3498db;" text="Cache: Activo" wrapText="true" />
+            
+        </VBox>
+    </right>
+    
+    <!-- Center: Graph Visualization -->
+    <center>
+        <ScrollPane fitToHeight="true" fitToWidth="true" style="-fx-background-color: #ecf0f1;">
+            <Canvas fx:id="graphCanvas" />
+        </ScrollPane>
+    </center>
+    
+    <!-- Bottom: Results Panel -->
+    <bottom>
+        <VBox spacing="10.0" style="-fx-background-color: #34495e; -fx-padding: 15;">
+            
+            <Label style="-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;" text="Resultados de la Ruta" />
+            
+            <HBox alignment="CENTER_LEFT" spacing="20.0">
+                <VBox spacing="5.0">
+                    <Label style="-fx-text-fill: #ecf0f1; -fx-font-weight: bold;" text="Ruta encontrada:" />
+                    <TextArea fx:id="pathResultArea" editable="false" prefColumnCount="40" prefRowCount="2" style="-fx-background-color: white;" wrapText="true" />
+                </VBox>
+                
+                <VBox spacing="5.0">
+                    <Label style="-fx-text-fill: #ecf0f1; -fx-font-weight: bold;" text="Distancia total:" />
+                    <Label fx:id="distanceLabel" style="-fx-text-fill: #2ecc71; -fx-font-size: 18px; -fx-font-weight: bold;" text="0.0 km" />
+                </VBox>
+                
+                <VBox spacing="5.0">
+                    <Label style="-fx-text-fill: #ecf0f1; -fx-font-weight: bold;" text="Estadísticas:" />
+                    <Label fx:id="statsLabel" style="-fx-text-fill: #f39c12;" text="Nodos: 0 | Aristas: 0" />
+                </VBox>
+            </HBox>
+            
+        </VBox>
+    </bottom>
+    
+</BorderPane>
