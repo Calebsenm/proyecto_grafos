@@ -6,7 +6,7 @@
 db.type=sqlite
 
 # --- Configuración SQLite ---
-db.file=app_data.db
+db.file=grafos_colombia.db
 
 # --- Configuración MySQL ---
 db.host=localhost
@@ -18,34 +18,33 @@ db.password=
 
 
 # Configuración de conexión
-db.connection.timeout=30000
-db.socket.timeout=30000
-db.auto.reconnect=true
-db.verify.server.certificate=false
+#db.connection.timeout=30000
+#db.socket.timeout=30000
+#db.auto.reconnect=true
+#db.verify.server.certificate=false
 
 # Configuración de pool de conexiones
-db.pool.initial.size=5
-db.pool.max.size=20
-db.pool.min.idle=5
-db.pool.max.idle=10
+#db.pool.initial.size=5
+#db.pool.max.size=20
+#db.pool.min.idle=5
+#db.pool.max.idle=10
 
 # Configuración de logging
-db.logging.enabled=true
-db.logging.level=INFO
+#db.logging.enabled=true
+#db.logging.level=INFO
 
 # Configuración de la aplicación
-app.database.enabled=true
-app.fallback.to.hardcoded=true
-app.auto.sync.colombian.locations=true
+#app.database.enabled=true
+#app.fallback.to.hardcoded=true
+#app.auto.sync.colombian.locations=true
 
 # Configuración de visualización
-graph.initial.zoom=1.0
-graph.center.latitude=8.7500
-graph.center.longitude=-75.8800
-graph.max.nodes.visualization=1000
+#graph.initial.zoom=1.0
+#graph.center.latitude=8.7500
+#graph.center.longitude=-75.8800
+#graph.max.nodes.visualization=1000
 
 # Configuración de algoritmos
-algorithm.default=dijkstra
-algorithm.max.iterations=1000
-algorithm.convergence.threshold=0.001
-
+#algorithm.default=dijkstra
+#algorithm.max.iterations=1000
+#algorithm.convergence.threshold=0.001
