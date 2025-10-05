@@ -1,24 +1,26 @@
 module com.grafos_colombia {
+
     requires javafx.controls;
     requires javafx.fxml;
     requires java.sql;
     requires java.desktop;
     
-    // MySQL Connector
-    requires mysql.connector.j;
+    // Correct module names for dependencies
+    requires flyway.core;
     
-    // Additional dependencies
     requires com.zaxxer.hikari;
     requires org.slf4j;
-    requires ch.qos.logback.classic;
     requires com.fasterxml.jackson.databind;
-    requires org.hibernate.validator;
-    requires org.glassfish.expressly;
-
+    requires org.xerial.sqlitejdbc;
+    
+    // Open resource packages to required modules
+    opens db.migration to flyway.core;
+    
+    opens com.grafos_colombia to javafx.fxml;
     opens com.grafos_colombia.controller to javafx.fxml;
+    
     opens com.grafos_colombia.database;
-    opens com.grafos_colombia.graph;
+    opens com.grafos_colombia.graph to javafx.fxml;
+    
     exports com.grafos_colombia;
-    exports com.grafos_colombia.graph;
-    exports com.grafos_colombia.database;
 }

@@ -7,6 +7,16 @@ Este proyecto utiliza el algoritmo de Dijkstra para encontrar la ruta más corta
 - **Java Development Kit (JDK)**: Versión 11 o superior.
 - **Apache Maven**: Para compilar y ejecutar el proyecto.
 
+## ⚙️ 2. Archivo database.properties
+
+- Guarda en src/main/resources/database.properties
+
+```
+db.file=grafos_colombia.db
+db.user=
+db.password=
+```
+
 ## 🚀 Cómo ejecutar
 
 1.  Abre una terminal en la carpeta raíz del proyecto (`proyecto_grafos`).

@@ -23,3 +23,11 @@ hs_err_pid*
 
 # VS Code
 .vscode/
+
+# Variables de entorno 
+database.properties
+
+
+# Sqlite 
+grafos_colombia.db
+*.db
