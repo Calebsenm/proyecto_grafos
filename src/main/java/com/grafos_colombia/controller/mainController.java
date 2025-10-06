@@ -13,6 +13,8 @@ import com.grafos_colombia.graph.Graph;
 import com.grafos_colombia.graph.GraphConverter;
 import com.grafos_colombia.graph.GraphView;
 import com.grafos_colombia.graph.Node;
+import java.net.URL;
+import java.util.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -25,9 +27,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
-
-import java.net.URL;
-import java.util.*;
 
 /**
  * Controlador principal de la aplicación de grafos de Colombia
@@ -43,7 +42,7 @@ public class MainController implements Initializable {
     private TextField destinationFilterField;
     @FXML
     private ComboBox<String> destinationComboBox;
-    
+
     // Layout buttons
     @FXML
     private Button geographicLayoutButton;
@@ -53,7 +52,7 @@ public class MainController implements Initializable {
     private Button hierarchicalLayoutButton;
     @FXML
     private Button forceLayoutButton;
-    
+
     @FXML
     private Button calculateButton;
     @FXML
@@ -74,20 +73,20 @@ public class MainController implements Initializable {
     private Button zoomOutButton;
     @FXML
     private Button resetZoomButton;
-    
+
     @FXML
     private TextArea pathResultArea;
     @FXML
     private VBox leftControls;
     @FXML
     private VBox rightControls;
-    
+
     // Status labels
     @FXML
     private Label databaseStatusLabel;
     @FXML
     private Label cacheStatusLabel;
-    
+
     // Canvas for graph visualization
     @FXML
     private Canvas graphCanvas;
@@ -101,11 +100,11 @@ public class MainController implements Initializable {
     private NodoDAO nodoDAO;
     private AristaDAO aristaDAO;
     private RutaDAO rutaDAO;
-    
+
     // Filtered lists for ComboBoxes
     private FilteredList<String> originFilteredList;
     private FilteredList<String> destinationFilteredList;
-    
+
     // Application state
     private boolean useDatabase = false;
     private boolean showEdgeLabels = true;
@@ -113,16 +112,16 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         System.out.println("🚀 Inicializando MainController...");
-        
+
         // Initialize database connection
         initializeDatabase();
-        
+
         // Initialize UI components
         initializeUIComponents();
-        
+
         // Load default graph
-            loadGraphData();
-        
+        loadGraphData();
+
         System.out.println("✅ MainController inicializado correctamente");
     }
 
@@ -135,12 +134,12 @@ public class MainController implements Initializable {
         nodoDAO = new NodoDAO();
         aristaDAO = new AristaDAO();
         rutaDAO = new RutaDAO();
-        
+
         // Try to connect to database
         if (databaseConnection.connect()) {
             System.out.println("✅ Conexión a base de datos establecida");
             useDatabase = true;
-            
+
             // Verify tables exist
             if (databaseConnection.verifyTables()) {
                 System.out.println("✅ Tablas de base de datos verificadas");
@@ -152,7 +151,7 @@ public class MainController implements Initializable {
             useDatabase = false;
         }
     }
-    
+
     /**
      * Initialize UI components
      */
@@ -164,7 +163,7 @@ public class MainController implements Initializable {
         if (destinationFilterField != null) {
             destinationFilterField.setPromptText("Filtrar destino...");
         }
-        
+
         // Initialize ComboBoxes
         if (originComboBox != null) {
             originComboBox.setPromptText("Selecciona origen...");
@@ -172,13 +171,13 @@ public class MainController implements Initializable {
         if (destinationComboBox != null) {
             destinationComboBox.setPromptText("Selecciona destino...");
         }
-        
+
         // Initialize result text area
         if (pathResultArea != null) {
             pathResultArea.setEditable(false);
             pathResultArea.setText("Selecciona origen y destino para calcular la ruta más corta.");
         }
-        
+
         // Initialize canvas size
         if (graphCanvas != null) {
             graphCanvas.setWidth(800);
@@ -187,7 +186,7 @@ public class MainController implements Initializable {
         } else {
             System.out.println("❌ Canvas no encontrado en initializeUIComponents()");
         }
-        
+
         // Update database status
         updateDatabaseStatus();
     }
@@ -199,11 +198,11 @@ public class MainController implements Initializable {
         if (useDatabase) {
             // Try to load from database first
             loadDatabaseGraph();
-                    return;
+            return;
         }
-            
+
         // Fallback to example graph
-            loadExampleGraph();
+        loadExampleGraph();
     }
 
     /**
@@ -212,7 +211,7 @@ public class MainController implements Initializable {
     @FXML
     private void loadExampleGraph() {
         System.out.println("📊 Cargando grafo ejemplo...");
-        
+
         List<Edge> edges = Arrays.asList(
                 new Edge("San antero", "Nuevo agrado", 11),
                 new Edge("Nuevo agrado", "Lorica", 9.1),
@@ -298,13 +297,13 @@ public class MainController implements Initializable {
 
         currentGraph = new Graph(edges);
         adjList = currentGraph.getAdjList();
-        
+
         // Initialize GraphView
         initializeGraphView();
-        
+
         // Populate ComboBoxes
         populateComboBoxes();
-        
+
         System.out.println("✅ Grafo ejemplo cargado con " + edges.size() + " aristas");
     }
 
@@ -314,30 +313,30 @@ public class MainController implements Initializable {
     @FXML
     private void loadDatabaseGraph() {
         System.out.println("🗄️ Cargando grafo desde base de datos...");
-        
+
         if (!useDatabase) {
             if (pathResultArea != null) {
                 pathResultArea.setText("❌ No hay conexión a la base de datos disponible.");
             }
             return;
         }
-        
+
         try {
             // Load graph from database
             currentGraph = graphDataLoader.cargarGrafoCompleto();
-            
+
             if (currentGraph != null) {
                 adjList = currentGraph.getAdjList();
-                
+
                 // Initialize GraphView with geographic coordinates
                 initializeGraphView();
-                
+
                 // Populate ComboBoxes
                 populateComboBoxes();
-                
+
                 // Update database status
                 updateDatabaseStatus();
-                
+
                 if (pathResultArea != null) {
                     pathResultArea.setText("✅ Grafo cargado desde la base de datos exitosamente.");
                 }
@@ -348,7 +347,7 @@ public class MainController implements Initializable {
                 }
                 System.out.println("❌ Error al cargar grafo desde BD");
             }
-            
+
         } catch (Exception e) {
             if (pathResultArea != null) {
                 pathResultArea.setText("❌ Error al cargar desde la base de datos: " + e.getMessage());
@@ -362,59 +361,59 @@ public class MainController implements Initializable {
      */
     private void initializeGraphView() {
         System.out.println("🔍 Iniciando initializeGraphView()...");
-        
+
         if (graphCanvas == null) {
             System.out.println("❌ Canvas no está disponible - verificar FXML");
             return;
         }
-        
+
         System.out.println("✅ Canvas encontrado: " + graphCanvas.getWidth() + "x" + graphCanvas.getHeight());
-        
+
         if (adjList == null || adjList.isEmpty()) {
             System.out.println("❌ AdjList está vacía o es null");
             return;
         }
-        
+
         System.out.println("✅ AdjList tiene " + adjList.size() + " nodos");
-        
+
         try {
             // Create GraphView with the canvas
             System.out.println("🔧 Creando GraphView...");
             graphView = new GraphView(graphCanvas);
-            
+
             // Convert graph to GraphView format
             System.out.println("🔧 Extrayendo aristas...");
             List<Edge> edges = extractEdgesFromAdjList();
             System.out.println("✅ Extraídas " + edges.size() + " aristas");
-            
+
             // Try to use geographic coordinates if available
             if (useDatabase) {
                 System.out.println("🗄️ Usando coordenadas geográficas de BD...");
                 Map<String, GeoNode> geoNodes = nodoDAO.obtenerMapaNodos();
                 System.out.println("✅ Obtenidos " + geoNodes.size() + " nodos geográficos");
-                
+
                 GraphConverter.GraphViewData graphData = GraphConverter.convertWithGeographicCoordinates(
-                    adjList, edges, geoNodes);
+                        adjList, edges, geoNodes);
                 System.out.println("✅ Convertidos " + graphData.getNodes().size() + " nodos y " + graphData.getEdges().size() + " aristas");
-                
+
                 graphView.initializeGraph(graphData.getNodes(), graphData.getEdges());
             } else {
                 System.out.println("📊 Usando conversión estándar...");
                 GraphConverter.GraphViewData graphData = GraphConverter.convertNodeAdjList(adjList, edges);
                 System.out.println("✅ Convertidos " + graphData.getNodes().size() + " nodos y " + graphData.getEdges().size() + " aristas");
-                
+
                 graphView.initializeGraph(graphData.getNodes(), graphData.getEdges());
             }
-            
+
             System.out.println("✅ GraphView inicializado correctamente con " + edges.size() + " aristas");
-            
+
             // Force a render to see if it works
             if (graphView != null) {
                 System.out.println("🎨 Forzando render...");
                 graphView.render();
                 System.out.println("✅ Render completado");
             }
-            
+
         } catch (Exception e) {
             System.err.println("❌ Error al inicializar GraphView: " + e.getMessage());
             e.printStackTrace();
@@ -427,21 +426,21 @@ public class MainController implements Initializable {
     private List<Edge> extractEdgesFromAdjList() {
         List<Edge> edges = new ArrayList<>();
         Set<String> processed = new HashSet<>();
-        
+
         for (Map.Entry<String, List<Node>> entry : adjList.entrySet()) {
             String source = entry.getKey();
             for (Node neighbor : entry.getValue()) {
                 String target = neighbor.getValue();
-                String edgeKey = Math.min(source.hashCode(), target.hashCode()) + "-" + 
-                               Math.max(source.hashCode(), target.hashCode());
-                
+                String edgeKey = Math.min(source.hashCode(), target.hashCode()) + "-"
+                        + Math.max(source.hashCode(), target.hashCode());
+
                 if (!processed.contains(edgeKey)) {
                     edges.add(new Edge(source, target, neighbor.getWeight()));
                     processed.add(edgeKey);
                 }
             }
         }
-        
+
         return edges;
     }
 
@@ -453,17 +452,17 @@ public class MainController implements Initializable {
             System.out.println("⚠️ No hay datos para poblar ComboBoxes");
             return;
         }
-        
+
         // Get sorted list of node names
         List<String> nodeNames = new ArrayList<>(adjList.keySet());
         nodeNames.sort(String.CASE_INSENSITIVE_ORDER);
-        
+
         ObservableList<String> nodeList = FXCollections.observableArrayList(nodeNames);
-        
+
         // Create filtered lists
         originFilteredList = new FilteredList<>(nodeList, s -> true);
         destinationFilteredList = new FilteredList<>(nodeList, s -> true);
-        
+
         // Set items in ComboBoxes
         if (originComboBox != null) {
             originComboBox.setItems(originFilteredList);
@@ -471,7 +470,7 @@ public class MainController implements Initializable {
         if (destinationComboBox != null) {
             destinationComboBox.setItems(destinationFilteredList);
         }
-        
+
         // Set default values
         if (!nodeNames.isEmpty()) {
             if (originComboBox != null) {
@@ -481,7 +480,7 @@ public class MainController implements Initializable {
                 destinationComboBox.setValue(nodeNames.get(1));
             }
         }
-        
+
         System.out.println("✅ ComboBoxes poblados con " + nodeNames.size() + " nodos (con filtros)");
     }
 
@@ -492,37 +491,37 @@ public class MainController implements Initializable {
     private void calculateShortestPath() {
         String origin = originComboBox != null ? originComboBox.getValue() : null;
         String destination = destinationComboBox != null ? destinationComboBox.getValue() : null;
-        
+
         if (origin == null || origin.trim().isEmpty()) {
             if (pathResultArea != null) {
                 pathResultArea.setText("❌ Por favor selecciona un nodo de origen.");
             }
             return;
         }
-        
+
         if (destination == null || destination.trim().isEmpty()) {
             if (pathResultArea != null) {
                 pathResultArea.setText("❌ Por favor selecciona un nodo de destino.");
             }
             return;
         }
-        
+
         if (origin.equals(destination)) {
             if (pathResultArea != null) {
                 pathResultArea.setText("❌ El origen y destino deben ser diferentes.");
             }
             return;
         }
-        
+
         if (adjList == null || adjList.isEmpty()) {
             if (pathResultArea != null) {
                 pathResultArea.setText("❌ No hay grafo cargado para calcular rutas.");
             }
             return;
         }
-        
+
         System.out.println("🔍 Calculando ruta de " + origin + " a " + destination + "...");
-        
+
         try {
             // Check cache first if using database
             PathResult cachedResult = null;
@@ -534,30 +533,30 @@ public class MainController implements Initializable {
                     return;
                 }
             }
-            
+
             // Calculate using Dijkstra's algorithm
             PathResult result = Dijkstra.dijkstra(origin, destination, adjList);
-            
+
             if (result != null) {
                 // Cache the result if using database
                 if (useDatabase) {
                     rutaDAO.guardarRuta(result, origin, destination);
                     System.out.println("💾 Ruta guardada en cache");
                 }
-                
+
                 displayPathResult(result, origin, destination, false);
-                
+
                 // Highlight path in GraphView
-                        if (graphView != null) {
+                if (graphView != null) {
                     graphView.highlightPath(result.path);
                 }
-                
+
             } else {
                 if (pathResultArea != null) {
                     pathResultArea.setText("❌ No se encontró una ruta entre " + origin + " y " + destination + ".");
                 }
             }
-            
+
         } catch (Exception e) {
             if (pathResultArea != null) {
                 pathResultArea.setText("❌ Error al calcular la ruta: " + e.getMessage());
@@ -570,19 +569,21 @@ public class MainController implements Initializable {
      * Display path result in text area
      */
     private void displayPathResult(PathResult result, String origin, String destination, boolean fromCache) {
-        if (pathResultArea == null) return;
-        
+        if (pathResultArea == null) {
+            return;
+        }
+
         StringBuilder sb = new StringBuilder();
         sb.append("✅ Ruta encontrada");
         if (fromCache) {
             sb.append(" (desde cache)");
         }
         sb.append(":\n\n");
-        
+
         sb.append("📍 Origen: ").append(origin).append("\n");
         sb.append("🎯 Destino: ").append(destination).append("\n");
         sb.append("📏 Distancia total: ").append(String.format("%.2f km", result.distance)).append("\n\n");
-        
+
         sb.append("🗺️ Ruta detallada:\n");
         for (int i = 0; i < result.path.size(); i++) {
             sb.append(String.format("%d. %s", i + 1, result.path.get(i)));
@@ -591,11 +592,11 @@ public class MainController implements Initializable {
             }
             sb.append("\n");
         }
-        
+
         pathResultArea.setText(sb.toString());
-        
-        System.out.println("✅ Ruta calculada: " + result.path.size() + " nodos, " + 
-                          String.format("%.2f km", result.distance));
+
+        System.out.println("✅ Ruta calculada: " + result.path.size() + " nodos, "
+                + String.format("%.2f km", result.distance));
     }
 
     /**
@@ -606,7 +607,7 @@ public class MainController implements Initializable {
         if (pathResultArea != null) {
             pathResultArea.setText("Selecciona origen y destino para calcular la ruta más corta.");
         }
-        
+
         // Clear ComboBox selections
         if (originComboBox != null) {
             originComboBox.getSelectionModel().clearSelection();
@@ -614,15 +615,15 @@ public class MainController implements Initializable {
         if (destinationComboBox != null) {
             destinationComboBox.getSelectionModel().clearSelection();
         }
-        
+
         // Clear filters
         clearFilters();
-        
+
         // Clear GraphView highlighting
-                        if (graphView != null) {
+        if (graphView != null) {
             graphView.highlightPath(new ArrayList<>());
         }
-        
+
         System.out.println("🧹 Resultados y selecciones limpiadas");
     }
 
@@ -637,7 +638,7 @@ public class MainController implements Initializable {
         if (destinationFilterField != null) {
             destinationFilterField.clear();
         }
-        
+
         // Reset ComboBox selections
         if (originComboBox != null) {
             originComboBox.setValue(null);
@@ -645,7 +646,7 @@ public class MainController implements Initializable {
         if (destinationComboBox != null) {
             destinationComboBox.setValue(null);
         }
-        
+
         // Reset filter predicates to show all items
         if (originFilteredList != null) {
             originFilteredList.setPredicate(item -> true);
@@ -653,7 +654,7 @@ public class MainController implements Initializable {
         if (destinationFilteredList != null) {
             destinationFilteredList.setPredicate(item -> true);
         }
-        
+
         // Update prompt texts
         updateComboBoxPrompt(originComboBox, "Selecciona origen...");
         updateComboBoxPrompt(destinationComboBox, "Selecciona destino...");
@@ -664,17 +665,19 @@ public class MainController implements Initializable {
      */
     @FXML
     private void filterOriginComboBox() {
-        if (originFilteredList == null) return;
-        
+        if (originFilteredList == null) {
+            return;
+        }
+
         String filterText = originFilterField != null ? originFilterField.getText() : "";
         if (filterText == null || filterText.trim().isEmpty()) {
             originFilteredList.setPredicate(item -> true);
         } else {
             String lowerCaseFilter = filterText.toLowerCase();
-            originFilteredList.setPredicate(item -> 
-                item.toLowerCase().contains(lowerCaseFilter));
+            originFilteredList.setPredicate(item
+                    -> item.toLowerCase().contains(lowerCaseFilter));
         }
-        
+
         updateComboBoxPrompt(originComboBox, "Selecciona origen...");
     }
 
@@ -683,17 +686,19 @@ public class MainController implements Initializable {
      */
     @FXML
     private void filterDestinationComboBox() {
-        if (destinationFilteredList == null) return;
-        
+        if (destinationFilteredList == null) {
+            return;
+        }
+
         String filterText = destinationFilterField != null ? destinationFilterField.getText() : "";
         if (filterText == null || filterText.trim().isEmpty()) {
             destinationFilteredList.setPredicate(item -> true);
         } else {
             String lowerCaseFilter = filterText.toLowerCase();
-            destinationFilteredList.setPredicate(item -> 
-                item.toLowerCase().contains(lowerCaseFilter));
+            destinationFilteredList.setPredicate(item
+                    -> item.toLowerCase().contains(lowerCaseFilter));
         }
-        
+
         updateComboBoxPrompt(destinationComboBox, "Selecciona destino...");
     }
 
@@ -716,11 +721,11 @@ public class MainController implements Initializable {
     @FXML
     private void toggleEdgeLabels() {
         showEdgeLabels = !showEdgeLabels;
-        
+
         if (graphView != null) {
             graphView.setShowEdgeWeights(showEdgeLabels);
         }
-        
+
         if (toggleLabelsButton != null) {
             toggleLabelsButton.setText(showEdgeLabels ? "Ocultar Etiquetas" : "Mostrar Etiquetas");
         }
@@ -740,7 +745,7 @@ public class MainController implements Initializable {
                 databaseStatusLabel.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
             }
         }
-        
+
         if (cacheStatusLabel != null) {
             if (useDatabase) {
                 cacheStatusLabel.setText("💾 Cache: Disponible");
@@ -761,7 +766,7 @@ public class MainController implements Initializable {
             System.out.println("🗺️ Layout cambiado a: Geográfico");
         }
     }
-    
+
     @FXML
     private void setCircularLayout() {
         if (graphView != null) {
@@ -770,7 +775,7 @@ public class MainController implements Initializable {
             System.out.println("⭕ Layout cambiado a: Circular");
         }
     }
-    
+
     @FXML
     private void setHierarchicalLayout() {
         if (graphView != null) {
@@ -779,7 +784,7 @@ public class MainController implements Initializable {
             System.out.println("📊 Layout cambiado a: Jerárquico");
         }
     }
-    
+
     @FXML
     private void setForceLayout() {
         if (graphView != null) {
@@ -788,19 +793,21 @@ public class MainController implements Initializable {
             System.out.println("🌀 Layout cambiado a: Por Fuerzas");
         }
     }
-    
+
     /**
      * Update layout button styles to highlight active layout
      */
     private void updateLayoutButtonStyles(GraphView.LayoutType activeLayout) {
-        if (geographicLayoutButton == null) return;
-        
+        if (geographicLayoutButton == null) {
+            return;
+        }
+
         // Reset all button styles
         geographicLayoutButton.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;");
         circularLayoutButton.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold;");
         hierarchicalLayoutButton.setStyle("-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-font-weight: bold;");
         forceLayoutButton.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold;");
-        
+
         // Highlight active layout
         switch (activeLayout) {
             case GEOGRAPHIC:
@@ -829,11 +836,11 @@ public class MainController implements Initializable {
             }
             return;
         }
-        
+
         try {
             // Get route history from database (last 10 routes)
             List<String> history = rutaDAO.obtenerHistorialRutas(10);
-            
+
             if (history.isEmpty()) {
                 if (pathResultArea != null) {
                     pathResultArea.setText("📋 No hay rutas en el historial.");
@@ -841,19 +848,19 @@ public class MainController implements Initializable {
             } else {
                 StringBuilder sb = new StringBuilder();
                 sb.append("📋 Historial de Rutas Calculadas (últimas 10):\n\n");
-                
+
                 for (String route : history) {
                     sb.append("📍 ").append(route).append("\n");
                     sb.append("---\n");
                 }
-                
+
                 if (pathResultArea != null) {
                     pathResultArea.setText(sb.toString());
                 }
             }
-            
+
             System.out.println("📋 Historial de rutas mostrado: " + history.size() + " rutas");
-            
+
         } catch (Exception e) {
             if (pathResultArea != null) {
                 pathResultArea.setText("❌ Error al obtener historial de rutas: " + e.getMessage());
@@ -873,19 +880,19 @@ public class MainController implements Initializable {
             }
             return;
         }
-        
+
         try {
             // Clear old routes (older than 7 days)
             int deletedCount = rutaDAO.limpiarRutasAntiguas(7);
-            
+
             if (pathResultArea != null) {
                 pathResultArea.setText("✅ Cache de rutas limpiado exitosamente. Se eliminaron " + deletedCount + " rutas antiguas.");
             }
             System.out.println("✅ Cache de rutas limpiado: " + deletedCount + " rutas eliminadas");
-            
+
             // Update cache status
             updateDatabaseStatus();
-            
+
         } catch (Exception e) {
             if (pathResultArea != null) {
                 pathResultArea.setText("❌ Error al limpiar cache: " + e.getMessage());
@@ -898,7 +905,7 @@ public class MainController implements Initializable {
     @FXML
     private void zoomIn() {
         if (graphView != null) {
-        graphView.zoomIn();
+            graphView.zoomIn();
             System.out.println("🔍 Zoom in aplicado");
         }
     }
@@ -906,7 +913,7 @@ public class MainController implements Initializable {
     @FXML
     private void zoomOut() {
         if (graphView != null) {
-        graphView.zoomOut();
+            graphView.zoomOut();
             System.out.println("🔍 Zoom out aplicado");
         }
     }
@@ -914,7 +921,7 @@ public class MainController implements Initializable {
     @FXML
     private void resetZoom() {
         if (graphView != null) {
-        graphView.resetView();
+            graphView.resetView();
             System.out.println("🔄 Zoom reseteado");
         }
     }
