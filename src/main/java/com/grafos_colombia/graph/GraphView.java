@@ -27,7 +27,7 @@ public class GraphView {
     private double viewportX = 0.0;
     private double viewportY = 0.0;
     private double viewportZoom = 1.0;
-    private double minZoom = 0.1;
+    private double minZoom = 0.01;
     private double maxZoom = 10.0;
 
     // Force-directed layout properties

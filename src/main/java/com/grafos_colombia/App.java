@@ -22,10 +22,10 @@ public class App extends Application {
             // Load FXML from the correct path
             Parent root = FXMLLoader.load(getClass().getResource("/com/grafos_colombia/main.fxml"));
             Scene scene = new Scene(root, 1200, 600); // Set initial size
-            stage.setTitle("Ruta más corta con Dijkstra - Colombia");
+            stage.setTitle("Visualizador de Rutas de Colombia");
             stage.setScene(scene);
             stage.setMinWidth(800);
-            stage.setMinHeight(600);
+            stage.setMinHeight(500); // Reduced min height for smaller screens
             stage.show();
         } catch (IOException e) {
             System.err.println("Error loading FXML: " + e.getMessage());

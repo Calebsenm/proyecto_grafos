@@ -25,6 +25,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
@@ -85,11 +86,17 @@ public class MainController implements Initializable {
     @FXML
     private Label databaseStatusLabel;
     @FXML
+    private Label distanceLabel;
+    @FXML
+    private Label statsLabel;
+    @FXML
     private Label cacheStatusLabel;
 
     // Canvas for graph visualization
     @FXML
     private Canvas graphCanvas;
+    @FXML
+    private ScrollPane graphScrollPane;
 
     // Graph and database components
     private GraphView graphView;
@@ -178,11 +185,11 @@ public class MainController implements Initializable {
             pathResultArea.setText("Selecciona origen y destino para calcular la ruta más corta.");
         }
 
-        // Initialize canvas size
-        if (graphCanvas != null) {
-            graphCanvas.setWidth(800);
-            graphCanvas.setHeight(600);
-            System.out.println("✅ Canvas inicializado con tamaño: " + graphCanvas.getWidth() + "x" + graphCanvas.getHeight());
+        // Bind canvas size to its container (ScrollPane) to make it responsive
+        if (graphCanvas != null && graphScrollPane != null) {
+            graphCanvas.widthProperty().bind(graphScrollPane.widthProperty());
+            graphCanvas.heightProperty().bind(graphScrollPane.heightProperty());
+            System.out.println("✅ Canvas enlazado al tamaño del ScrollPane para ser responsivo.");
         } else {
             System.out.println("❌ Canvas no encontrado en initializeUIComponents()");
         }
@@ -573,30 +580,17 @@ public class MainController implements Initializable {
             return;
         }
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("✅ Ruta encontrada");
-        if (fromCache) {
-            sb.append(" (desde cache)");
-        }
-        sb.append(":\n\n");
+        // Update the main stats labels directly
+        distanceLabel.setText(String.format("%.2f km", result.distance));
+        statsLabel.setText("Nodos: " + result.path.size() + " | Aristas: " + (result.path.size() - 1));
 
-        sb.append("📍 Origen: ").append(origin).append("\n");
-        sb.append("🎯 Destino: ").append(destination).append("\n");
-        sb.append("📏 Distancia total: ").append(String.format("%.2f km", result.distance)).append("\n\n");
+        // Build the continuous path string in the format A -> B -> C
+        String detailedPath = String.join("  →  ", result.path);
+        pathResultArea.setText(detailedPath);
 
-        sb.append("🗺️ Ruta detallada:\n");
-        for (int i = 0; i < result.path.size(); i++) {
-            sb.append(String.format("%d. %s", i + 1, result.path.get(i)));
-            if (i < result.path.size() - 1) {
-                sb.append(" → ");
-            }
-            sb.append("\n");
-        }
-
-        pathResultArea.setText(sb.toString());
-
-        System.out.println("✅ Ruta calculada: " + result.path.size() + " nodos, "
-                + String.format("%.2f km", result.distance));
+        // Ensure the text area starts scrolled to the beginning
+        pathResultArea.positionCaret(0);
+        System.out.println("✅ Ruta mostrada: " + detailedPath);
     }
 
     /**
