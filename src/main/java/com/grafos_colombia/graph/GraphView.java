@@ -2,12 +2,15 @@ package com.grafos_colombia.graph;
 
 import java.util.*;
 import javafx.animation.AnimationTimer;
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
+import javafx.geometry.VPos;
 import javafx.scene.text.FontWeight;
 
 /**
@@ -30,12 +33,6 @@ public class GraphView {
     private double minZoom = 0.01;
     private double maxZoom = 10.0;
 
-    // Force-directed layout properties
-    private double springConstant = 0.1;
-    private double repulsionConstant = 10000.0;
-    private double damping = 0.8;
-    private double maxVelocity = 50.0;
-    private double minDistance = 30.0;
 
     // Interaction properties
     private boolean isPanning = false;
@@ -60,6 +57,10 @@ public class GraphView {
     
     private LayoutType currentLayout = LayoutType.GEOGRAPHIC;
     private AnimationTimer animationTimer;
+
+    // New force-directed layout properties from GraphPanel
+    private double temperature = 0;
+    private static final int NODE_DIAMETER = 16;
 
     // Colors
     private static final Color NODE_COLOR = Color.LIGHTBLUE;
@@ -356,6 +357,11 @@ public class GraphView {
      * Start the force-directed layout animation
      */
     private void startLayoutAnimation() {
+        // Initialize temperature for simulated annealing
+        if (canvas != null) {
+            this.temperature = canvas.getWidth() / 10.0;
+        }
+
         if (animationTimer != null) {
             animationTimer.stop();
         }
@@ -364,7 +370,13 @@ public class GraphView {
         animationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                updateForces();
+                if (temperature > 0.1) {
+                    updateForces();
+                    // Cool down
+                    temperature *= 0.99;
+                } else {
+                    stopLayoutAnimation();
+                }
                 render();
             }
         };
@@ -385,78 +397,64 @@ public class GraphView {
      * Update forces for all nodes
      */
     private void updateForces() {
-        // Clear velocities
-        for (GraphNode node : nodes) {
-            node.setVelocity(0, 0);
+        if (nodes.isEmpty() || canvas.getWidth() == 0 || canvas.getHeight() == 0) {
+            return;
         }
 
-        // Apply repulsion forces between all nodes
+        double area = canvas.getWidth() * canvas.getHeight();
+        double k = 1.2 * Math.sqrt(area / nodes.size());
+
+        // Create a map for forces for this iteration
+        Map<GraphNode, Point2D> forces = new HashMap<>();
+        for (GraphNode node : nodes) {
+            forces.put(node, new Point2D(0, 0));
+        }
+
+        // a. Calculate repulsion forces
         for (int i = 0; i < nodes.size(); i++) {
             for (int j = i + 1; j < nodes.size(); j++) {
                 GraphNode node1 = nodes.get(i);
                 GraphNode node2 = nodes.get(j);
 
-                double dx = node1.getX() - node2.getX();
-                double dy = node1.getY() - node2.getY();
-                double distance = Math.sqrt(dx * dx + dy * dy);
+                Point2D delta = node1.getPosition().subtract(node2.getPosition());
+                double distance = Math.max(0.1, delta.magnitude());
+                double repulsiveForce = (k * k) / distance;
 
-                if (distance > 0) {
-                    // Minimum distance enforcement
-                    if (distance < minDistance) {
-                        double force = (minDistance - distance) / distance * 100.0;
-                        double fx = dx * force;
-                        double fy = dy * force;
-
-                        node1.addForce(fx, fy);
-                        node2.addForce(-fx, -fy);
-                    }
-
-                    // Repulsion force
-                    double repulsionForce = repulsionConstant / (distance * distance);
-                    double fx = dx * repulsionForce;
-                    double fy = dy * repulsionForce;
-
-                    node1.addForce(fx, fy);
-                    node2.addForce(-fx, -fy);
+                // "Personal space bubble" to prevent overlaps
+                if (distance < NODE_DIAMETER * 2.5) {
+                    repulsiveForce *= 20;
                 }
+
+                Point2D force = delta.normalize().multiply(repulsiveForce);
+                forces.put(node1, forces.get(node1).add(force));
+                forces.put(node2, forces.get(node2).subtract(force));
             }
         }
 
-        // Apply spring forces for connected nodes
+        // b. Calculate attraction forces
         for (GraphEdge edge : edges) {
             GraphNode source = edge.getSource();
             GraphNode target = edge.getTarget();
 
-            double dx = target.getX() - source.getX();
-            double dy = target.getY() - source.getY();
-            double distance = Math.sqrt(dx * dx + dy * dy);
+            Point2D delta = source.getPosition().subtract(target.getPosition());
+            double distance = Math.max(0.1, delta.magnitude());
+            double attractiveForce = (distance * distance) / k;
 
-            if (distance > 0) {
-                double springForce = springConstant * (distance - 50.0); // Ideal distance
-                double fx = dx * springForce / distance;
-                double fy = dy * springForce / distance;
-
-                source.addForce(fx, fy);
-                target.addForce(-fx, -fy);
-            }
+            Point2D force = delta.normalize().multiply(attractiveForce);
+            forces.put(source, forces.get(source).subtract(force));
+            forces.put(target, forces.get(target).add(force));
         }
 
-        // Apply gravity to keep nodes near center
-        double centerX = canvas.getWidth() / 2.0;
-        double centerY = canvas.getHeight() / 2.0;
-        double gravity = 0.01;
-
+        // c. Move nodes according to forces and temperature
         for (GraphNode node : nodes) {
             if (!node.isFixed() && !node.isDragging()) {
-                double dx = centerX - node.getX();
-                double dy = centerY - node.getY();
-                node.addForce(dx * gravity, dy * gravity);
+                Point2D force = forces.get(node);
+                double displacement = Math.min(force.magnitude(), temperature);
+                if (displacement > 0) {
+                    Point2D newPos = node.getPosition().add(force.normalize().multiply(displacement));
+                    node.setPosition(newPos);
+                }
             }
-        }
-
-        // Update positions
-        for (GraphNode node : nodes) {
-            node.updatePosition(damping, maxVelocity);
         }
     }
 
@@ -511,24 +509,8 @@ public class GraphView {
             double x2 = target.getX();
             double y2 = target.getY();
 
-            // Calculate control points for smooth curve
-            double dx = x2 - x1;
-            double dy = y2 - y1;
-            double distance = Math.sqrt(dx * dx + dy * dy);
-
-            if (distance > 0) {
-                double offset = Math.min(distance * 0.2, 30);
-                double cx1 = x1 + dx * 0.5 + dy * offset / distance;
-                double cy1 = y1 + dy * 0.5 - dx * offset / distance;
-                double cx2 = x2 - dx * 0.5 + dy * offset / distance;
-                double cy2 = y2 - dy * 0.5 - dx * offset / distance;
-
-                gc.strokePolyline(
-                        new double[]{x1, cx1, cx2, x2},
-                        new double[]{y1, cy1, cy2, y2},
-                        4
-                );
-            }
+            // Draw a straight line
+            gc.strokeLine(x1, y1, x2, y2);
 
             // Draw edge weight
             if (showEdgeWeights && viewportZoom > 0.5) {
@@ -581,23 +563,13 @@ public class GraphView {
 
             // Draw node label
             if (showNodeLabels && viewportZoom > 0.3) {
-                gc.setFill(TEXT_COLOR);
+                gc.setFill(Color.BLACK); // Use black text for better contrast on light blue
                 gc.setFont(Font.font("Arial", FontWeight.BOLD, 10 / viewportZoom));
+                gc.setTextAlign(TextAlignment.CENTER);
+                gc.setTextBaseline(VPos.CENTER);
 
                 String label = node.getName();
-                double labelWidth = gc.getFont().getSize() * label.length() * 0.6;
-                double labelX = x - labelWidth / 2;
-                double labelY = y - radius - 5;
-
-                // Background for label
-                gc.setFill(Color.WHITE);
-                gc.fillRect(labelX - 2, labelY - 12, labelWidth + 4, 14);
-                gc.setStroke(Color.BLACK);
-                gc.strokeRect(labelX - 2, labelY - 12, labelWidth + 4, 14);
-
-                // Label text
-                gc.setFill(TEXT_COLOR);
-                gc.fillText(label, labelX, labelY);
+                gc.fillText(label, x, y);
             }
         }
     }
