@@ -1,5 +1,6 @@
 package com.grafos_colombia.controller;
 
+import com.grafos_colombia.algorithm.Dfs;
 import com.grafos_colombia.algorithm.Dijkstra;
 import com.grafos_colombia.algorithm.PathResult;
 import com.grafos_colombia.database.AristaDAO;
@@ -25,6 +26,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
@@ -44,13 +47,24 @@ public class MainController implements Initializable {
     @FXML
     private ComboBox<String> destinationComboBox;
 
+    // Calculation Type Components
+    @FXML
+    private ToggleGroup calculationTypeGroup;
+    @FXML
+    private RadioButton shortestPathRadio;
+    @FXML
+    private RadioButton simpleCycleRadio;
+    @FXML
+    private RadioButton eccentricityRadio;
+
+    @FXML
+    private VBox originContainer;
+    @FXML
+    private VBox destinationContainer;
+
     // Layout buttons
     @FXML
     private Button geographicLayoutButton;
-    @FXML
-    private Button circularLayoutButton;
-    @FXML
-    private Button hierarchicalLayoutButton;
     @FXML
     private Button forceLayoutButton;
 
@@ -496,6 +510,19 @@ public class MainController implements Initializable {
      */
     @FXML
     private void calculateShortestPath() {
+        RadioButton selectedRadio = (RadioButton) calculationTypeGroup.getSelectedToggle();
+
+        if (selectedRadio.equals(simpleCycleRadio)) {
+            handleCycleDetection();
+            return;
+        }
+        // Aquí irían las llamadas a los otros cálculos (excentricidad, etc.)
+
+        // Si no es ninguno de los nuevos, ejecuta el cálculo de ruta corta
+        handleShortestPathCalculation();
+    }
+
+    private void handleShortestPathCalculation() {
         String origin = originComboBox != null ? originComboBox.getValue() : null;
         String destination = destinationComboBox != null ? destinationComboBox.getValue() : null;
 
@@ -572,6 +599,22 @@ public class MainController implements Initializable {
         }
     }
 
+    private void handleCycleDetection() {
+        if (adjList == null || adjList.isEmpty()) {
+            pathResultArea.setText("❌ No hay grafo cargado para detectar ciclos.");
+            return;
+        }
+
+        System.out.println("🔄 Detectando si existe un ciclo en el grafo...");
+        boolean hasCycle = Dfs.hasCycle(adjList);
+
+        if (hasCycle) {
+            pathResultArea.setText("✅ ¡Sí! El grafo contiene al menos un ciclo simple.");
+        } else {
+            pathResultArea.setText("✅ No se encontraron ciclos simples en el grafo.");
+        }
+    }
+
     /**
      * Display path result in text area
      */
@@ -591,6 +634,27 @@ public class MainController implements Initializable {
         // Ensure the text area starts scrolled to the beginning
         pathResultArea.positionCaret(0);
         System.out.println("✅ Ruta mostrada: " + detailedPath);
+    }
+
+    /**
+     * Handles changes in the calculation type radio buttons.
+     * Shows or hides the destination input fields based on the selection.
+     */
+    @FXML
+    private void handleCalculationTypeChange() {
+        RadioButton selectedRadio = (RadioButton) calculationTypeGroup.getSelectedToggle();
+        if (selectedRadio == null) {
+            return;
+        }
+
+        boolean needsDestination = selectedRadio.equals(shortestPathRadio);
+        destinationContainer.setVisible(needsDestination);
+        destinationContainer.setManaged(needsDestination);
+
+        // Update the main button text
+        calculateButton.setText("Calcular " + selectedRadio.getText().split(" ")[0]);
+
+        System.out.println("🔄 Tipo de cálculo cambiado a: " + selectedRadio.getText());
     }
 
     /**
@@ -762,24 +826,6 @@ public class MainController implements Initializable {
     }
 
     @FXML
-    private void setCircularLayout() {
-        if (graphView != null) {
-            graphView.setLayoutType(GraphView.LayoutType.CIRCULAR);
-            updateLayoutButtonStyles(GraphView.LayoutType.CIRCULAR);
-            System.out.println("⭕ Layout cambiado a: Circular");
-        }
-    }
-
-    @FXML
-    private void setHierarchicalLayout() {
-        if (graphView != null) {
-            graphView.setLayoutType(GraphView.LayoutType.HIERARCHICAL);
-            updateLayoutButtonStyles(GraphView.LayoutType.HIERARCHICAL);
-            System.out.println("📊 Layout cambiado a: Jerárquico");
-        }
-    }
-
-    @FXML
     private void setForceLayout() {
         if (graphView != null) {
             graphView.setLayoutType(GraphView.LayoutType.FORCE_DIRECTED);
@@ -798,20 +844,12 @@ public class MainController implements Initializable {
 
         // Reset all button styles
         geographicLayoutButton.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;");
-        circularLayoutButton.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold;");
-        hierarchicalLayoutButton.setStyle("-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-font-weight: bold;");
         forceLayoutButton.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold;");
 
         // Highlight active layout
         switch (activeLayout) {
             case GEOGRAPHIC:
                 geographicLayoutButton.setStyle("-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-weight: bold; -fx-border-color: #ffffff; -fx-border-width: 2px;");
-                break;
-            case CIRCULAR:
-                circularLayoutButton.setStyle("-fx-background-color: #5dade2; -fx-text-fill: white; -fx-font-weight: bold; -fx-border-color: #ffffff; -fx-border-width: 2px;");
-                break;
-            case HIERARCHICAL:
-                hierarchicalLayoutButton.setStyle("-fx-background-color: #bb8fce; -fx-text-fill: white; -fx-font-weight: bold; -fx-border-color: #ffffff; -fx-border-width: 2px;");
                 break;
             case FORCE_DIRECTED:
                 forceLayoutButton.setStyle("-fx-background-color: #ec7063; -fx-text-fill: white; -fx-font-weight: bold; -fx-border-color: #ffffff; -fx-border-width: 2px;");

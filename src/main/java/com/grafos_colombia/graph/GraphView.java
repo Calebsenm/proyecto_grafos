@@ -51,8 +51,6 @@ public class GraphView {
     public enum LayoutType {
         FORCE_DIRECTED,
         GEOGRAPHIC,
-        CIRCULAR,
-        HIERARCHICAL
     }
     
     private LayoutType currentLayout = LayoutType.GEOGRAPHIC;
@@ -115,12 +113,6 @@ public class GraphView {
             case GEOGRAPHIC:
                 applyGeographicLayout();
                 break;
-            case CIRCULAR:
-                applyCircularLayout();
-                break;
-            case HIERARCHICAL:
-                applyHierarchicalLayout();
-                break;
             case FORCE_DIRECTED:
                 initializeRandomPositions();
                 startLayoutAnimation();
@@ -140,12 +132,6 @@ public class GraphView {
             case GEOGRAPHIC:
                 sortNodesByGeographicCoordinates();
                 break;
-            case CIRCULAR:
-                sortNodesAlphabetically();
-                break;
-            case HIERARCHICAL:
-                sortNodesByRegion();
-                break;
             case FORCE_DIRECTED:
                 // Keep original order for force-directed
                 break;
@@ -156,23 +142,6 @@ public class GraphView {
      * Sort nodes alphabetically
      */
     private void sortNodesAlphabetically() {
-        nodes.sort((node1, node2) -> node1.getId().compareToIgnoreCase(node2.getId()));
-    }
-
-    /**
-     * Sort nodes by region (first letter of name)
-     */
-    private void sortNodesByRegion() {
-        nodes.sort((node1, node2) -> {
-            char region1 = Character.toUpperCase(node1.getId().charAt(0));
-            char region2 = Character.toUpperCase(node2.getId().charAt(0));
-            int regionCompare = Character.compare(region1, region2);
-            if (regionCompare != 0) {
-                return regionCompare;
-            }
-            // Within same region, sort alphabetically
-            return node1.getId().compareToIgnoreCase(node2.getId());
-        });
     }
 
     /**
@@ -198,7 +167,7 @@ public class GraphView {
 
         // If no geographic data, fallback to circular layout
         if (minLat == Double.MAX_VALUE) {
-            applyCircularLayout();
+            // If no geo data, maybe default to force-directed? For now, we do nothing.
             return;
         }
 
@@ -226,79 +195,6 @@ public class GraphView {
         }
 
         // Render once without animation
-        render();
-    }
-
-    /**
-     * Apply circular layout
-     */
-    private void applyCircularLayout() {
-        if (nodes.isEmpty()) {
-            return;
-        }
-
-        double centerX = canvas.getWidth() / 2.0;
-        double centerY = canvas.getHeight() / 2.0;
-        double radius = Math.min(canvas.getWidth(), canvas.getHeight()) * 0.35;
-
-        for (int i = 0; i < nodes.size(); i++) {
-            GraphNode node = nodes.get(i);
-            double angle = 2 * Math.PI * i / nodes.size();
-            double x = centerX + radius * Math.cos(angle);
-            double y = centerY + radius * Math.sin(angle);
-            node.setPosition(x, y);
-        }
-
-        render();
-    }
-
-    /**
-     * Apply hierarchical layout by regions
-     */
-    private void applyHierarchicalLayout() {
-        if (nodes.isEmpty()) {
-            return;
-        }
-
-        // Group nodes by first letter of name (simple region grouping)
-        Map<Character, List<GraphNode>> groups = new HashMap<>();
-        for (GraphNode node : nodes) {
-            char firstChar = Character.toUpperCase(node.getId().charAt(0));
-            groups.computeIfAbsent(firstChar, k -> new ArrayList<>()).add(node);
-        }
-
-        double canvasWidth = canvas.getWidth();
-        double canvasHeight = canvas.getHeight();
-        double padding = 100;
-
-        int numGroups = groups.size();
-        int cols = (int) Math.ceil(Math.sqrt(numGroups));
-        int rows = (int) Math.ceil((double) numGroups / cols);
-
-        double groupWidth = (canvasWidth - 2 * padding) / cols;
-        double groupHeight = (canvasHeight - 2 * padding) / rows;
-
-        int groupIndex = 0;
-        for (List<GraphNode> group : groups.values()) {
-            int col = groupIndex % cols;
-            int row = groupIndex / cols;
-
-            double groupX = padding + col * groupWidth + groupWidth / 2;
-            double groupY = padding + row * groupHeight + groupHeight / 2;
-
-            // Arrange nodes in group in a small circle
-            double groupRadius = Math.min(groupWidth, groupHeight) * 0.3;
-            for (int i = 0; i < group.size(); i++) {
-                GraphNode node = group.get(i);
-                double angle = 2 * Math.PI * i / group.size();
-                double x = groupX + groupRadius * Math.cos(angle);
-                double y = groupY + groupRadius * Math.sin(angle);
-                node.setPosition(x, y);
-            }
-
-            groupIndex++;
-        }
-
         render();
     }
 

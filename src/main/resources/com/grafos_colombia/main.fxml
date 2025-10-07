@@ -7,6 +7,8 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -24,84 +26,98 @@
     
     <!-- Left: Input Panel -->
     <left>
-        <VBox minWidth="280" maxWidth="350" spacing="15.0" style="-fx-background-color: #ecf0f1; -fx-padding: 20;">
-            
-            <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Configuración de Ruta" />
-            
-            <Separator />
-            
-            <Label style="-fx-font-weight: bold;" text="Lugar Origen:" />
-            <TextField fx:id="originFilterField" onKeyReleased="#filterOriginComboBox" promptText="🔍 Filtrar lugares origen..." style="-fx-background-color: #f8f9fa; -fx-border-color: #dee2e6; -fx-border-radius: 4;" />
-            <ComboBox fx:id="originComboBox" editable="false" maxWidth="1.7976931348623157E308" promptText="Seleccione lugar origen..." />
-            
-            <Label style="-fx-font-weight: bold;" text="Lugar Destino:" />
-            <TextField fx:id="destinationFilterField" onKeyReleased="#filterDestinationComboBox" promptText="🔍 Filtrar lugares destino..." style="-fx-background-color: #f8f9fa; -fx-border-color: #dee2e6; -fx-border-radius: 4;" />
-            <ComboBox fx:id="destinationComboBox" editable="false" maxWidth="1.7976931348623157E308" promptText="Seleccione lugar destino..." />
-            
-            <HBox alignment="CENTER" spacing="10.0">
-                <Button fx:id="calculateButton" onAction="#calculateShortestPath" prefWidth="120" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold;" text="Calcular Ruta" />
-                <Button fx:id="clearButton" onAction="#clearResults" prefWidth="80" style="-fx-background-color: #e74c3c; -fx-text-fill: white;" text="Limpiar" />
-            </HBox>
-            
-            <Separator />
-            
-            <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Controles de Grafo" />
-            
-            <Button fx:id="loadExampleButton" maxWidth="1.7976931348623157E308" onAction="#loadExampleGraph" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;" text="Cargar Grafo Ejemplo" />
-            
-            <Button fx:id="loadDatabaseButton" maxWidth="1.7976931348623157E308" onAction="#loadDatabaseGraph" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold;" text="Cargar Grafo desde BD" />
-            
-            <Button fx:id="toggleLabelsButton" onAction="#toggleEdgeLabels" style="-fx-background-color: #f39c12; -fx-text-fill: white;" text="Mostrar/Ocultar Etiquetas" />
-            
-            <Separator />
-            
-            <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Tipos de Layout" />
-            
-            <HBox alignment="CENTER" spacing="5.0" HBox.hgrow="ALWAYS">
-                <Button fx:id="geographicLayoutButton" maxWidth="1.7976931348623157E308" onAction="#setGeographicLayout" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;" text="🗺️ Geo" HBox.hgrow="ALWAYS" />
-                <Button fx:id="circularLayoutButton" maxWidth="1.7976931348623157E308" onAction="#setCircularLayout" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold;" text="⭕ Circ" HBox.hgrow="ALWAYS" />
-                <Button fx:id="hierarchicalLayoutButton" maxWidth="1.7976931348623157E308" onAction="#setHierarchicalLayout" style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-font-weight: bold;" text="📊 Hier" HBox.hgrow="ALWAYS" />
-                <Button fx:id="forceLayoutButton" maxWidth="1.7976931348623157E308" onAction="#setForceLayout" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold;" text="🌀 Fuer" HBox.hgrow="ALWAYS" />
-            </HBox>
-                      
-        </VBox>
+        <ScrollPane fitToWidth="true" minWidth="280" maxWidth="350" style="-fx-background-color: #ecf0f1;">
+            <VBox spacing="10.0" style="-fx-padding: 15;">
+
+                <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Tipo de Análisis" />
+                <VBox style="-fx-border-color: #bdc3c7; -fx-border-radius: 4; -fx-padding: 10;" spacing="8">
+                    <fx:define>
+                        <ToggleGroup fx:id="calculationTypeGroup" />
+                    </fx:define>
+                    <RadioButton fx:id="shortestPathRadio" text="Ruta más Corta y Alternativa" toggleGroup="$calculationTypeGroup" onAction="#handleCalculationTypeChange" selected="true" />
+                    <RadioButton fx:id="simpleCycleRadio" text="Ciclo Simple" toggleGroup="$calculationTypeGroup" onAction="#handleCalculationTypeChange" />
+                    <RadioButton fx:id="eccentricityRadio" text="Excentricidad de un Nodo" toggleGroup="$calculationTypeGroup" onAction="#handleCalculationTypeChange" />
+                </VBox>
+                
+                <Separator />
+                
+                <VBox fx:id="originContainer" spacing="5.0">
+                    <Label style="-fx-font-weight: bold;" text="Lugar Origen:" />
+                    <TextField fx:id="originFilterField" onKeyReleased="#filterOriginComboBox" promptText="🔍 Filtrar lugar de origen..." style="-fx-background-color: #f8f9fa; -fx-border-color: #dee2e6; -fx-border-radius: 4;" />
+                    <ComboBox fx:id="originComboBox" editable="false" maxWidth="1.7976931348623157E308" promptText="Seleccione un lugar..." />
+                </VBox>
+
+                <VBox fx:id="destinationContainer" spacing="5.0">
+                    <Label style="-fx-font-weight: bold;" text="Lugar Destino:" />
+                    <TextField fx:id="destinationFilterField" onKeyReleased="#filterDestinationComboBox" promptText="🔍 Filtrar lugar de destino..." style="-fx-background-color: #f8f9fa; -fx-border-color: #dee2e6; -fx-border-radius: 4;" />
+                    <ComboBox fx:id="destinationComboBox" editable="false" maxWidth="1.7976931348623157E308" promptText="Seleccione un lugar..." />
+                </VBox>
+                
+                <HBox alignment="CENTER" spacing="10.0">
+                    <Button fx:id="calculateButton" onAction="#calculateShortestPath" prefWidth="120" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold;" text="Calcular Ruta" />
+                    <Button fx:id="clearButton" onAction="#clearResults" prefWidth="80" style="-fx-background-color: #e74c3c; -fx-text-fill: white;" text="Limpiar" />
+                </HBox>
+                
+                <Separator />
+                
+                <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Controles de Grafo" />
+                
+                <Button fx:id="loadExampleButton" maxWidth="1.7976931348623157E308" onAction="#loadExampleGraph" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;" text="Cargar Grafo Ejemplo" />
+                
+                <Button fx:id="loadDatabaseButton" maxWidth="1.7976931348623157E308" onAction="#loadDatabaseGraph" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold;" text="Cargar Grafo desde BD" />
+                
+                <Button fx:id="toggleLabelsButton" onAction="#toggleEdgeLabels" style="-fx-background-color: #f39c12; -fx-text-fill: white;" text="Mostrar/Ocultar Etiquetas" />
+                
+                <Separator />
+                
+                <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Tipos de Layout" />
+                
+                <HBox alignment="CENTER" spacing="5.0" HBox.hgrow="ALWAYS">
+                    <Button fx:id="geographicLayoutButton" maxWidth="1.7976931348623157E308" onAction="#setGeographicLayout" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;" text="🗺️ Geo" HBox.hgrow="ALWAYS" />
+                    <Button fx:id="forceLayoutButton" maxWidth="1.7976931348623157E308" onAction="#setForceLayout" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold;" text="🌀 Fuer" HBox.hgrow="ALWAYS" />
+                </HBox>
+                          
+            </VBox>
+        </ScrollPane>
     </left>
     
     <!-- Right: Controls Panel -->
     <right>
-        <VBox minWidth="240" maxWidth="300" spacing="15.0" style="-fx-background-color: #ecf0f1; -fx-padding: 20;">
-            
-            <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Controles de Vista" />
-            
-            <Separator />
-            
-            <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Gestión de Rutas" />
-            
-            <Button fx:id="showHistoryButton" maxWidth="1.7976931348623157E308" onAction="#showRouteHistory" style="-fx-background-color: #9b59b6; -fx-text-fill: white;" text="Ver Historial de Rutas" />
-            
-            <Button fx:id="clearCacheButton" maxWidth="1.7976931348623157E308" onAction="#clearRouteCache" style="-fx-background-color: #e67e22; -fx-text-fill: white;" text="Limpiar Cache de Rutas" />
-            
-            <Separator />
-            
-            <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Controles de Zoom" />
-            
-            <HBox alignment="CENTER" spacing="10.0">
-                <Button fx:id="zoomInButton" maxWidth="1.7976931348623157E308" onAction="#zoomIn" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;" text="🔍+" HBox.hgrow="ALWAYS" />
-                <Button fx:id="zoomOutButton" maxWidth="1.7976931348623157E308" onAction="#zoomOut" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold;" text="🔍-" HBox.hgrow="ALWAYS" />
-                <Button fx:id="resetZoomButton" maxWidth="1.7976931348623157E308" onAction="#resetZoom" style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-font-weight: bold;" text="🏠" HBox.hgrow="ALWAYS" />
-            </HBox>
-            
-            <Label style="-fx-font-size: 11px; -fx-text-fill: #7f8c8d;" text="💡 Usa la rueda del mouse para hacer zoom y arrastra para mover el mapa" wrapText="true" />
-            
-            <Separator />
-            
-            <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Información del Sistema" />
-            
-            <Label fx:id="databaseStatusLabel" style="-fx-font-size: 12px; -fx-text-fill: #27ae60; -fx-font-weight: bold;" text="🟢 Base de datos conectada" wrapText="true" />
-            
-            <Label fx:id="cacheStatusLabel" style="-fx-font-size: 12px; -fx-text-fill: #3498db;" text="Cache: Activo" wrapText="true" />
-            
-        </VBox>
+        <ScrollPane fitToWidth="true" minWidth="240" maxWidth="300" style="-fx-background-color: #ecf0f1;">
+            <VBox spacing="10.0" style="-fx-padding: 15;">
+                
+                <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Controles de Vista" />
+                
+                <Separator />
+                
+                <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Gestión de Rutas" />
+                
+                <Button fx:id="showHistoryButton" maxWidth="1.7976931348623157E308" onAction="#showRouteHistory" style="-fx-background-color: #9b59b6; -fx-text-fill: white;" text="Ver Historial de Rutas" />
+                
+                <Button fx:id="clearCacheButton" maxWidth="1.7976931348623157E308" onAction="#clearRouteCache" style="-fx-background-color: #e67e22; -fx-text-fill: white;" text="Limpiar Cache de Rutas" />
+                
+                <Separator />
+                
+                <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Controles de Zoom" />
+                
+                <HBox alignment="CENTER" spacing="10.0">
+                    <Button fx:id="zoomInButton" maxWidth="1.7976931348623157E308" onAction="#zoomIn" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;" text="🔍+" HBox.hgrow="ALWAYS" />
+                    <Button fx:id="zoomOutButton" maxWidth="1.7976931348623157E308" onAction="#zoomOut" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold;" text="🔍-" HBox.hgrow="ALWAYS" />
+                    <Button fx:id="resetZoomButton" maxWidth="1.7976931348623157E308" onAction="#resetZoom" style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-font-weight: bold;" text="Ver Todo" HBox.hgrow="ALWAYS" />
+                </HBox>
+                
+                <Label style="-fx-font-size: 11px; -fx-text-fill: #7f8c8d;" text="💡 Usa la rueda del mouse para hacer zoom y arrastra para mover el mapa" wrapText="true" />
+                
+                <Separator />
+                
+                <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Información del Sistema" />
+                
+                <Label fx:id="databaseStatusLabel" style="-fx-font-size: 12px; -fx-text-fill: #27ae60; -fx-font-weight: bold;" text="🟢 Base de datos conectada" wrapText="true" />
+                
+                <Label fx:id="cacheStatusLabel" style="-fx-font-size: 12px; -fx-text-fill: #3498db;" text="Cache: Activo" wrapText="true" />
+                
+            </VBox>
+        </ScrollPane>
     </right>
     
     <!-- Center: Graph Visualization -->
@@ -113,27 +129,26 @@
     
     <!-- Bottom: Results Panel -->
     <bottom>
-        <VBox minHeight="110" spacing="10.0" style="-fx-background-color: #34495e; -fx-padding: 15;">
+        <VBox minHeight="120" spacing="8" style="-fx-background-color: #34495e; -fx-padding: 12;">
             
-            <Label style="-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;" text="Resultados de la Ruta" />
-            
-            <HBox alignment="CENTER_LEFT" spacing="20.0">
-                <VBox spacing="5.0" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
-                    <Label style="-fx-text-fill: #ecf0f1; -fx-font-weight: bold;" text="Ruta encontrada:" />
-                    <TextArea fx:id="pathResultArea" editable="false" prefRowCount="2" style="-fx-background-color: white;" wrapText="true" />
+            <!-- Top row with main stats -->
+            <HBox alignment="CENTER_LEFT" spacing="25.0">
+                <VBox HBox.hgrow="NEVER">
+                    <Label style="-fx-text-fill: #bdc3c7; -fx-font-size: 11px;" text="DISTANCIA TOTAL" />
+                    <Label fx:id="distanceLabel" style="-fx-text-fill: #2ecc71; -fx-font-size: 22px; -fx-font-weight: bold;" text="0.0 km" />
                 </VBox>
-                
-                <VBox spacing="5.0">
-                    <Label style="-fx-text-fill: #ecf0f1; -fx-font-weight: bold;" text="Distancia total:" />
-                    <Label fx:id="distanceLabel" minWidth="-Infinity" style="-fx-text-fill: #2ecc71; -fx-font-size: 18px; -fx-font-weight: bold;" text="0.0 km" />
-                </VBox>
-                
-                <VBox spacing="5.0">
-                    <Label style="-fx-text-fill: #ecf0f1; -fx-font-weight: bold;" text="Estadísticas:" />
-                    <Label fx:id="statsLabel" minWidth="-Infinity" style="-fx-text-fill: #f39c12;" text="Nodos: 0 | Aristas: 0" />
+                <VBox HBox.hgrow="NEVER">
+                    <Label style="-fx-text-fill: #bdc3c7; -fx-font-size: 11px;" text="ESTADÍSTICAS" />
+                    <Label fx:id="statsLabel" style="-fx-text-fill: #f39c12; -fx-font-size: 14px;" text="Nodos: 0 | Aristas: 0" />
                 </VBox>
             </HBox>
             
+            <!-- Bottom row with detailed path -->
+            <VBox spacing="4" VBox.vgrow="ALWAYS">
+                <Label style="-fx-text-fill: #bdc3c7; -fx-font-size: 11px;" text="RUTA DETALLADA" />
+                <TextArea fx:id="pathResultArea" editable="false" prefRowCount="2" style="-fx-font-family: 'Consolas'; -fx-font-size: 14px; -fx-control-inner-background: white; -fx-text-fill: black;" wrapText="false" VBox.vgrow="ALWAYS" />
+            </VBox>
+
         </VBox>
     </bottom>
     
