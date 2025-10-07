@@ -436,7 +436,7 @@ public class GraphView {
         for (GraphNode node : nodes) {
             double x = node.getX();
             double y = node.getY();
-            double radius = node.getRadius() / viewportZoom;
+            double radius = node.getRadius(); // Use a fixed radius in world coordinates
 
             // Choose node color
             Color nodeColor;
