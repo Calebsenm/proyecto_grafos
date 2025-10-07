@@ -625,9 +625,24 @@ public class MainController implements Initializable {
 
         if (cyclePath != null && !cyclePath.isEmpty()) {
             String cycleString = String.join(" → ", cyclePath);
+            
+            // Calculate total distance of the cycle
+            double totalDistance = 0.0;
+            for (int i = 0; i < cyclePath.size() - 1; i++) {
+                String u = cyclePath.get(i);
+                String v = cyclePath.get(i + 1);
+                for (Node neighbor : adjList.get(u)) {
+                    if (neighbor.getValue().equals(v)) {
+                        totalDistance += neighbor.getWeight();
+                        break;
+                    }
+                }
+            }
+
             pathResultArea.setText("✅ Ciclo encontrado desde " + startNode + ":\n" + cycleString);
-            statsLabel.setText("Nodos: " + (cyclePath.size() - 1));
-            distanceLabel.setText("N/A"); // Distance is not applicable for a simple cycle detection
+            // The number of unique nodes/edges in a simple cycle is path.size() - 1
+            statsLabel.setText("Nodos: " + (cyclePath.size() - 1) + " | Aristas: " + (cyclePath.size() - 1));
+            distanceLabel.setText(String.format("%.2f km", totalDistance));
 
             if (graphView != null) {
                 graphView.highlightPath(cyclePath);
