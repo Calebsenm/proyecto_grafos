@@ -2,6 +2,7 @@ package com.grafos_colombia.controller;
 
 import com.grafos_colombia.algorithm.Bfs;
 import com.grafos_colombia.algorithm.Dijkstra;
+import com.grafos_colombia.algorithm.Eccentricity;
 import com.grafos_colombia.algorithm.PathResult;
 import com.grafos_colombia.database.AristaDAO;
 import com.grafos_colombia.database.DatabaseConnection;
@@ -516,8 +517,10 @@ public class MainController implements Initializable {
             handleCycleDetection();
             return;
         }
-        // Aquí irían las llamadas a los otros cálculos (excentricidad, etc.)
-
+        if (selectedRadio.equals(eccentricityRadio)) {
+            handleEccentricityCalculation();
+            return;
+        }
         // Si no es ninguno de los nuevos, ejecuta el cálculo de ruta corta
         handleShortestPathCalculation();
     }
@@ -625,6 +628,37 @@ public class MainController implements Initializable {
             }
         } else {
             pathResultArea.setText("✅ No se encontraron ciclos que involucren al nodo " + startNode + ".");
+        }
+    }
+
+    private void handleEccentricityCalculation() {
+        if (adjList == null || adjList.isEmpty()) {
+            pathResultArea.setText("❌ No hay grafo cargado para calcular la excentricidad.");
+            return;
+        }
+
+        String startNode = originComboBox.getValue();
+        if (startNode == null || startNode.trim().isEmpty()) {
+            pathResultArea.setText("❌ Por favor selecciona un nodo de origen.");
+            return;
+        }
+
+        System.out.println("🔄 Calculando excentricidad para el nodo: " + startNode + "...");
+        Eccentricity.EccentricityResult result = Eccentricity.calculate(startNode, adjList);
+
+        if (result != null && result.farthestNode != null) {
+            // Display results
+            distanceLabel.setText(String.format("%.2f km", result.eccentricity));
+            statsLabel.setText("Excentricidad");
+            pathResultArea.setText("El nodo más lejano desde " + startNode + " es " + result.farthestNode + ".");
+
+            // Highlight the longest shortest path
+            if (graphView != null && result.path != null) {
+                graphView.highlightPath(result.path);
+            }
+            System.out.println("✅ Excentricidad de " + startNode + " es " + result.eccentricity + " (hacia " + result.farthestNode + ")");
+        } else {
+            pathResultArea.setText("❌ No se pudo calcular la excentricidad para " + startNode + ". El nodo podría estar aislado.");
         }
     }
 
