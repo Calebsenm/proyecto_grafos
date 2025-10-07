@@ -1,6 +1,6 @@
 package com.grafos_colombia.controller;
 
-import com.grafos_colombia.algorithm.Dfs;
+import com.grafos_colombia.algorithm.Bfs;
 import com.grafos_colombia.algorithm.Dijkstra;
 import com.grafos_colombia.algorithm.PathResult;
 import com.grafos_colombia.database.AristaDAO;
@@ -605,13 +605,26 @@ public class MainController implements Initializable {
             return;
         }
 
-        System.out.println("🔄 Detectando si existe un ciclo en el grafo...");
-        boolean hasCycle = Dfs.hasCycle(adjList);
+        String startNode = originComboBox.getValue();
+        if (startNode == null || startNode.trim().isEmpty()) {
+            pathResultArea.setText("❌ Por favor selecciona un nodo de origen para buscar el ciclo.");
+            return;
+        }
 
-        if (hasCycle) {
-            pathResultArea.setText("✅ ¡Sí! El grafo contiene al menos un ciclo simple.");
+        System.out.println("🔄 Buscando un ciclo desde el nodo: " + startNode + "...");
+        List<String> cyclePath = Bfs.findShortestCycle(adjList, startNode);
+
+        if (cyclePath != null && !cyclePath.isEmpty()) {
+            String cycleString = String.join(" → ", cyclePath);
+            pathResultArea.setText("✅ Ciclo encontrado desde " + startNode + ":\n" + cycleString);
+            statsLabel.setText("Nodos: " + (cyclePath.size() - 1));
+            distanceLabel.setText("N/A"); // Distance is not applicable for a simple cycle detection
+
+            if (graphView != null) {
+                graphView.highlightPath(cyclePath);
+            }
         } else {
-            pathResultArea.setText("✅ No se encontraron ciclos simples en el grafo.");
+            pathResultArea.setText("✅ No se encontraron ciclos que involucren al nodo " + startNode + ".");
         }
     }
 

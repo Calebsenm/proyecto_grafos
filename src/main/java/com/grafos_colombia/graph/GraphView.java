@@ -647,6 +647,9 @@ public class GraphView {
                 }
             }
         }
+
+        // Redraw the canvas to show the highlighted path
+        render();
     }
 
     /**

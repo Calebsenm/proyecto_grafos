@@ -81,7 +81,7 @@
         </ScrollPane>
     </left>
     
-    <!-- Right: Controls Panel -->
+    <!-- Right: Controls Panel 
     <right>
         <ScrollPane fitToWidth="true" minWidth="240" maxWidth="300" style="-fx-background-color: #ecf0f1;">
             <VBox spacing="10.0" style="-fx-padding: 15;">
@@ -119,6 +119,7 @@
             </VBox>
         </ScrollPane>
     </right>
+    -->
     
     <!-- Center: Graph Visualization -->
     <center>
