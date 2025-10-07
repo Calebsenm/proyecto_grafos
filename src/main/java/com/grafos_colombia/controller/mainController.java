@@ -326,6 +326,12 @@ public class MainController implements Initializable {
         // Populate ComboBoxes
         populateComboBoxes();
 
+        // Set force-directed layout by default for the example graph
+        if (graphView != null) {
+            graphView.setLayoutType(GraphView.LayoutType.FORCE_DIRECTED);
+            updateLayoutButtonStyles(GraphView.LayoutType.FORCE_DIRECTED);
+        }
+
         System.out.println("✅ Grafo ejemplo cargado con " + edges.size() + " aristas");
     }
 
@@ -649,7 +655,11 @@ public class MainController implements Initializable {
         if (result != null && result.farthestNode != null) {
             // Display results
             distanceLabel.setText(String.format("%.2f km", result.eccentricity));
-            statsLabel.setText("Excentricidad");
+            if (result.path != null) {
+                statsLabel.setText("Nodos: " + result.path.size() + " | Aristas: " + (result.path.size() - 1));
+            } else {
+                statsLabel.setText("Excentricidad");
+            }
             pathResultArea.setText("El nodo más lejano desde " + startNode + " es " + result.farthestNode + ".");
 
             // Highlight the longest shortest path
