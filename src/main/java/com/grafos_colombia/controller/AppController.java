@@ -25,7 +25,7 @@ import javafx.scene.layout.VBox;
 /**
  * Controlador principal simplificado - Solo carga CSV->BD->Grafo
  */
-public class MainController implements Initializable {
+public class AppController implements Initializable {
 
     // === FXML Components ===
     @FXML private TextField originFilterField;

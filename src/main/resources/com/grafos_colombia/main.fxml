@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <!-- Asegúrate de que el controlador referenciado sea com.grafos_colombia.controller.MainController -->
-<BorderPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.grafos_colombia.controller.MainController">
+<BorderPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.grafos_colombia.controller.AppController">
     
     <!-- Top: Title Bar -->
     <top>
