@@ -104,6 +104,42 @@
                     </options>
                 </configuration>
             </plugin>
+            
+            <!-- Plugin para crear JAR ejecutable con dependencias -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.4.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.grafos_colombia.Main</mainClass>
+                                </transformer>
+                                <!-- Incluir todos los recursos -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
+                                    <resource>db/migration</resource>
+                                </transformer>
+                            </transformers>
+                            <finalName>grafos-colombia-app</finalName>
+                            <!-- Incluir todos los archivos de resources -->
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>

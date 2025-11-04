@@ -108,47 +108,7 @@ public class GraphConverter {
     /**
      * Data container for GraphView
      */
-    /**
-     * Convert adjacency list with geographic coordinates to GraphView format
-     *
-     * @param adjList
-     * @param edges
-     * @param geoNodes
-     * @return
-     */
-    public static GraphViewData convertWithGeographicCoordinates(Map<String, List<Node>> adjList, List<Edge> edges, Map<String, GeoNode> geoNodes) {
-        List<GraphNode> nodes = new ArrayList<>();
-        List<GraphEdge> graphEdges = new ArrayList<>();
-        Map<String, GraphNode> nodeMap = new HashMap<>();
 
-        // Create nodes from adjacency list with geographic coordinates
-        for (String nodeId : adjList.keySet()) {
-            GeoNode geoNode = geoNodes.get(nodeId);
-            GraphNode node;
-
-            if (geoNode != null) {
-                node = new GraphNode(nodeId, nodeId, 0, 0, geoNode.getLatitude(), geoNode.getLongitude());
-            } else {
-                node = new GraphNode(nodeId, nodeId);
-            }
-
-            nodes.add(node);
-            nodeMap.put(nodeId, node);
-        }
-
-        // Create edges
-        for (Edge edge : edges) {
-            GraphNode source = nodeMap.get(edge.getSrc());
-            GraphNode target = nodeMap.get(edge.getDest());
-
-            if (source != null && target != null) {
-                GraphEdge graphEdge = new GraphEdge(source, target, edge.getWeight());
-                graphEdges.add(graphEdge);
-            }
-        }
-
-        return new GraphViewData(nodes, graphEdges);
-    }
 
     public static class GraphViewData {
 

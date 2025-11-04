@@ -42,8 +42,13 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
-
-        DatabaseMigration.init();
+        // Inicializar base de datos
+        try {
+            DatabaseMigration.init();
+        } catch (Exception e) {
+            System.err.println("Error inicializando BD: " + e.getMessage());
+            // Continuar de todas formas
+        }
 
         launch();
     }

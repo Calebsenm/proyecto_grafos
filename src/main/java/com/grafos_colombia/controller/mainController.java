@@ -105,6 +105,7 @@ public class MainController implements Initializable {
             return;
         }
         
+
         // Primero cargar CSV a BD si no hay datos
         if (!db.tieneDatos()) {
             boolean loaded = loader.cargarDesdeCSV();
