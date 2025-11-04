@@ -23,7 +23,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
 /**
- * Controlador principal (versión mínima: sin coordenadas, sin cache)
+ * Controlador principal simplificado - Solo carga CSV->BD->Grafo
  */
 public class MainController implements Initializable {
 
@@ -41,11 +41,9 @@ public class MainController implements Initializable {
     @FXML private VBox originContainer;
     @FXML private VBox destinationContainer;
 
-    @FXML private Button geographicLayoutButton;
     @FXML private Button forceLayoutButton;
     @FXML private Button calculateButton;
     @FXML private Button clearButton;
-    @FXML private Button loadExampleButton;
     @FXML private Button loadDatabaseButton;
     @FXML private Button toggleLabelsButton;
     @FXML private Button zoomInButton;
@@ -73,15 +71,11 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        System.out.println("Inicializando MainController...");
-
         db = DatabaseConnection.getInstance();
         loader = new GraphDataLoader();
 
         initializeUI();
-        loadGraphData();
-
-        System.out.println("MainController inicializado");
+        // No cargar datos automáticamente
     }
 
     private void initializeUI() {
@@ -91,7 +85,7 @@ public class MainController implements Initializable {
         destinationComboBox.setPromptText("Destino...");
 
         pathResultArea.setEditable(false);
-        pathResultArea.setText("Selecciona origen y destino.");
+        pathResultArea.setText("Haz clic en 'Cargar CSV → BD → Grafo' para comenzar.");
 
         if (graphCanvas != null && graphScrollPane != null) {
             graphCanvas.widthProperty().bind(graphScrollPane.widthProperty());
@@ -101,48 +95,46 @@ public class MainController implements Initializable {
         updateDatabaseStatus();
     }
 
-    private void loadGraphData() {
-        if (db.isConnected() && db.tieneDatos()) {
-            loadDatabaseGraph();
-        } else {
-            loadExampleGraph();
-        }
-    }
 
-    @FXML
-    private void loadExampleGraph() {
-        System.out.println("Cargando grafo de ejemplo...");
-        List<Edge> edges = getExampleEdges();
-        Graph graph = new Graph(edges);
-        setupGraph(graph, false);
-        setForceLayout();
-    }
 
     @FXML
     private void loadDatabaseGraph() {
-        System.out.println("Cargando desde base de datos...");
+        // Conectar a la base de datos
+        if (!db.connect()) {
+            pathResultArea.setText("Error: No se pudo conectar a la base de datos.");
+            return;
+        }
+        
+        // Primero cargar CSV a BD si no hay datos
+        if (!db.tieneDatos()) {
+            boolean loaded = loader.cargarDesdeCSV();
+            if (!loaded) {
+                pathResultArea.setText("Error: No se pudieron cargar los datos del CSV.");
+                return;
+            }
+        }
+        
+        // Cargar grafo desde BD
         Graph graph = loader.cargarGrafoCompleto();
         if (graph != null) {
-            setupGraph(graph, false); // SIN coordenadas
-            setForceLayout(); // Solo fuerza
-            pathResultArea.setText("Grafo cargado desde BD.");
+            setupGraph(graph);
+            pathResultArea.setText("Grafo cargado correctamente desde BD.");
         } else {
-            pathResultArea.setText("No hay datos en BD. Usando ejemplo.");
-            loadExampleGraph();
+            pathResultArea.setText("Error: No se pudo cargar el grafo desde BD.");
         }
     }
 
-    private void setupGraph(Graph graph, boolean hasCoords) {
+    private void setupGraph(Graph graph) {
         clearResults();
         currentGraph = graph;
         adjList = graph.getAdjList();
 
-        initializeGraphView(hasCoords);
+        initializeGraphView();
         populateComboBoxes();
         updateDatabaseStatus();
     }
 
-    private void initializeGraphView(boolean hasCoords) {
+    private void initializeGraphView() {
         if (graphCanvas == null) return;
 
         graphView = new GraphView(graphCanvas);
@@ -150,6 +142,7 @@ public class MainController implements Initializable {
 
         var data = GraphConverter.convertNodeAdjList(adjList, edges);
         graphView.initializeGraph(data.getNodes(), data.getEdges());
+        graphView.setLayoutType(GraphView.LayoutType.FORCE_DIRECTED);
         graphView.render();
     }
 
@@ -314,21 +307,13 @@ public class MainController implements Initializable {
     @FXML private void setForceLayout() {
         if (graphView != null) {
             graphView.setLayoutType(GraphView.LayoutType.FORCE_DIRECTED);
-            updateLayoutButtons(GraphView.LayoutType.FORCE_DIRECTED);
+            updateLayoutButtons();
         }
     }
 
-    // Deshabilitamos layout geográfico
-    @FXML private void setGeographicLayout() {
-        pathResultArea.setText("Layout geográfico no disponible (sin coordenadas).");
-    }
-
-    private void updateLayoutButtons(GraphView.LayoutType type) {
+    private void updateLayoutButtons() {
         String active = "-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold;";
-        String inactive = "-fx-background-color: #95a5a6; -fx-text-fill: white;";
-        forceLayoutButton.setStyle(type == GraphView.LayoutType.FORCE_DIRECTED ? active : inactive);
-        geographicLayoutButton.setStyle("-fx-background-color: #7f8c8d; -fx-text-fill: #bdc3c7;"); // Gris
-        geographicLayoutButton.setDisable(true);
+        forceLayoutButton.setStyle(active);
     }
 
     @FXML private void zoomIn() { if (graphView != null) graphView.zoomIn(); }
@@ -344,19 +329,5 @@ public class MainController implements Initializable {
             databaseStatusLabel.setText("BD: Desconectada");
             databaseStatusLabel.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
         }
-    }
-
-    // === DATOS DE EJEMPLO ===
-    private List<Edge> getExampleEdges() {
-        return List.of(
-            new Edge("San Antero", "Lorica", 20),
-            new Edge("Lorica", "Montería", 45),
-            new Edge("Montería", "Cereté", 15),
-            new Edge("Cereté", "San Pelayo", 18),
-            new Edge("San Pelayo", "Cotorra", 12),
-            new Edge("Montería", "Planeta Rica", 70),
-            new Edge("Planeta Rica", "Sahagún", 55),
-            new Edge("Sahagún", "Chinú", 30)
-        );
     }
 }

@@ -66,4 +66,11 @@ public class NodoDAO {
             return null;
         }
     }
+
+    /** Guardar nodo si no existe */
+    public void guardarSiNoExiste(String nombre) {
+        if (!existeNodo(nombre)) {
+            insertarNodo(nombre);
+        }
+    }
 }

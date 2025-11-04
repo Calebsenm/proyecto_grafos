@@ -59,7 +59,7 @@ public class DatabaseConnection {
                 throw new IllegalArgumentException("Tipo de base no reconocido: " + dbType);
             }
 
-            System.out.println("✅ Configuración cargada: " + dbType + " - " + dbUrl);
+
 
         } catch (IOException e) {
             throw new RuntimeException("No se pudo leer " + CONFIG_FILE, e);
@@ -79,8 +79,13 @@ public class DatabaseConnection {
             }
 
             connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+            
+            // Solo log la primera vez que se conecta
+            if (!isConnected) {
+                System.out.println("✅ Conectado a " + dbType.toUpperCase());
+            }
+            
             isConnected = true;
-            System.out.println("✅ Conectado a " + dbType.toUpperCase());
             return true;
 
         } catch (Exception e) {
@@ -90,8 +95,10 @@ public class DatabaseConnection {
     }
 
     public Connection getConnection() throws SQLException {
-        if (!isConnected || connection == null || connection.isClosed())
+        // Siempre verificar si la conexión está válida antes de devolverla
+        if (connection == null || connection.isClosed() || !connection.isValid(5)) {
             connect();
+        }
         return connection;
     }
 
@@ -138,12 +145,10 @@ public class DatabaseConnection {
             Connection conn = getConnection();
             DatabaseMetaData metaData = conn.getMetaData();
 
-            // CAMBIA ESTO:
-            String[] requiredTables = { "nodo", "arista" }; // ← Tus tablas reales
+            String[] requiredTables = { "nodo", "arista" };
 
             for (String tableName : requiredTables) {
                 ResultSet tables = metaData.getTables(null, null, tableName.toUpperCase(), null);
-                // SQLite guarda nombres en MAYÚSCULAS internamente
                 boolean found = false;
                 while (tables.next()) {
                     String foundName = tables.getString("TABLE_NAME");
@@ -160,7 +165,7 @@ public class DatabaseConnection {
                 }
             }
 
-            System.out.println("Todas las tablas requeridas están presentes: nodo, arista");
+
             return true;
 
         } catch (SQLException e) {
@@ -180,23 +185,16 @@ public class DatabaseConnection {
 
             // Contar nodos
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT COUNT(*) as total FROM nodos WHERE activo = TRUE");
+            ResultSet rs = stmt.executeQuery("SELECT COUNT(*) as total FROM nodo");
             if (rs.next()) {
-                System.out.println("   • Nodos activos: " + rs.getInt("total"));
+                System.out.println("   • Nodos: " + rs.getInt("total"));
             }
             rs.close();
 
             // Contar aristas
-            rs = stmt.executeQuery("SELECT COUNT(*) as total FROM aristas WHERE activo = TRUE");
+            rs = stmt.executeQuery("SELECT COUNT(*) as total FROM arista");
             if (rs.next()) {
-                System.out.println("   • Aristas activas: " + rs.getInt("total"));
-            }
-            rs.close();
-
-            // Contar rutas calculadas
-            rs = stmt.executeQuery("SELECT COUNT(*) as total FROM rutas_calculadas");
-            if (rs.next()) {
-                System.out.println("   • Rutas calculadas: " + rs.getInt("total"));
+                System.out.println("   • Aristas: " + rs.getInt("total"));
             }
             rs.close();
 
@@ -212,8 +210,8 @@ public class DatabaseConnection {
             return false;
         }
         String sql = "SELECT " +
-                "(SELECT COUNT(*) FROM nodos) as nodos_count, " +
-                "(SELECT COUNT(*) FROM aristas) as aristas_count";
+                "(SELECT COUNT(*) FROM nodo) as nodos_count, " +
+                "(SELECT COUNT(*) FROM arista) as aristas_count";
 
         try (Connection conn = getConnection();
                 Statement stmt = conn.createStatement();

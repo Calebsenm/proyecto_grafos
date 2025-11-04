@@ -245,4 +245,15 @@ public class AristaDAO {
 
         return stats;
     }
+
+    /** Guardar arista si no existe (bidireccional) */
+    public void guardarSiNoExiste(String nodo1, String nodo2, double distancia) {
+        // Insertar en ambas direcciones si no existen
+        if (!existeArista(nodo1, nodo2)) {
+            insertarArista(nodo1, nodo2, distancia);
+        }
+        if (!existeArista(nodo2, nodo1)) {
+            insertarArista(nodo2, nodo1, distancia);
+        }
+    }
 }
