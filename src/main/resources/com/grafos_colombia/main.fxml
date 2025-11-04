@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-
+<!-- Asegúrate de que el controlador referenciado sea com.grafos_colombia.controller.MainController -->
 <BorderPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.grafos_colombia.controller.MainController">
     
     <!-- Top: Title Bar -->
@@ -79,46 +79,6 @@
             </VBox>
         </ScrollPane>
     </left>
-    
-    <!-- Right: Controls Panel 
-    <right>
-        <ScrollPane fitToWidth="true" minWidth="240" maxWidth="300" style="-fx-background-color: #ecf0f1;">
-            <VBox spacing="10.0" style="-fx-padding: 15;">
-                
-                <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Controles de Vista" />
-                
-                <Separator />
-                
-                <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Gestión de Rutas" />
-                
-                <Button fx:id="showHistoryButton" maxWidth="1.7976931348623157E308" onAction="#showRouteHistory" style="-fx-background-color: #9b59b6; -fx-text-fill: white;" text="Ver Historial de Rutas" />
-                
-                <Button fx:id="clearCacheButton" maxWidth="1.7976931348623157E308" onAction="#clearRouteCache" style="-fx-background-color: #e67e22; -fx-text-fill: white;" text="Limpiar Cache de Rutas" />
-                
-                <Separator />
-                
-                <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Controles de Zoom" />
-                
-                <HBox alignment="CENTER" spacing="10.0">
-                    <Button fx:id="zoomInButton" maxWidth="1.7976931348623157E308" onAction="#zoomIn" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;" text="🔍+" HBox.hgrow="ALWAYS" />
-                    <Button fx:id="zoomOutButton" maxWidth="1.7976931348623157E308" onAction="#zoomOut" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold;" text="🔍-" HBox.hgrow="ALWAYS" />
-                    <Button fx:id="resetZoomButton" maxWidth="1.7976931348623157E308" onAction="#resetZoom" style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-font-weight: bold;" text="Ver Todo" HBox.hgrow="ALWAYS" />
-                </HBox>
-                
-                <Label style="-fx-font-size: 11px; -fx-text-fill: #7f8c8d;" text="💡 Usa la rueda del mouse para hacer zoom y arrastra para mover el mapa" wrapText="true" />
-                
-                <Separator />
-                
-                <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Información del Sistema" />
-                
-                <Label fx:id="databaseStatusLabel" style="-fx-font-size: 12px; -fx-text-fill: #27ae60; -fx-font-weight: bold;" text="🟢 Base de datos conectada" wrapText="true" />
-                
-                <Label fx:id="cacheStatusLabel" style="-fx-font-size: 12px; -fx-text-fill: #3498db;" text="Cache: Activo" wrapText="true" />
-                
-            </VBox>
-        </ScrollPane>
-    </right>
-    -->
     
     <!-- Center: Graph Visualization -->
     <center>

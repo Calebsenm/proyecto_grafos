@@ -1,14 +1,10 @@
 package com.grafos_colombia.database;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
 import java.util.Properties;
 
-/**
- * Clase para gestionar la conexión a la base de datos
- */
 public class DatabaseConnection {
 
     private static DatabaseConnection instance;
@@ -136,50 +132,39 @@ public class DatabaseConnection {
         }
     }
 
-    /**
-     * Obtener información de la base de datos
-     */
-    public void printDatabaseInfo() {
-        try {
-            Connection conn = getConnection();
-            DatabaseMetaData metaData = conn.getMetaData();
 
-            System.out.println("\n📊 INFORMACIÓN DE LA BASE DE DATOS:");
-            System.out.println("   • URL: " + metaData.getURL());
-            System.out.println("   • Usuario: " + metaData.getUserName());
-            System.out.println("   • Driver: " + metaData.getDriverName());
-            System.out.println("   • Versión Driver: " + metaData.getDriverVersion());
-            System.out.println("   • Versión BD: " + metaData.getDatabaseProductVersion());
-
-        } catch (SQLException e) {
-            System.err.println("❌ Error al obtener información: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Verificar que las tablas existan
-     */
     public boolean verifyTables() {
         try {
             Connection conn = getConnection();
             DatabaseMetaData metaData = conn.getMetaData();
 
-            String[] requiredTables = { "nodos", "aristas", "rutas_calculadas", "secuencia_rutas", "configuraciones" };
+            // CAMBIA ESTO:
+            String[] requiredTables = { "nodo", "arista" }; // ← Tus tablas reales
 
             for (String tableName : requiredTables) {
-                ResultSet tables = metaData.getTables(null, null, tableName, null);
-                if (!tables.next()) {
-                    System.err.println("❌ Tabla faltante: " + tableName);
-                    return false;
+                ResultSet tables = metaData.getTables(null, null, tableName.toUpperCase(), null);
+                // SQLite guarda nombres en MAYÚSCULAS internamente
+                boolean found = false;
+                while (tables.next()) {
+                    String foundName = tables.getString("TABLE_NAME");
+                    if (foundName.equalsIgnoreCase(tableName)) {
+                        found = true;
+                        break;
+                    }
                 }
                 tables.close();
+
+                if (!found) {
+                    System.err.println("Tabla faltante: " + tableName);
+                    return false;
+                }
             }
 
-            System.out.println("✅ Todas las tablas requeridas están presentes");
+            System.out.println("Todas las tablas requeridas están presentes: nodo, arista");
             return true;
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al verificar tablas: " + e.getMessage());
+            System.err.println("Error al verificar tablas: " + e.getMessage());
             return false;
         }
     }
@@ -222,6 +207,29 @@ public class DatabaseConnection {
         }
     }
 
+    public boolean tieneDatos() {
+        if (!isConnected()) {
+            return false;
+        }
+        String sql = "SELECT " +
+                "(SELECT COUNT(*) FROM nodos) as nodos_count, " +
+                "(SELECT COUNT(*) FROM aristas) as aristas_count";
+
+        try (Connection conn = getConnection();
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql)) {
+
+            if (rs.next()) {
+                int nodosCount = rs.getInt("nodos_count");
+                int aristasCount = rs.getInt("aristas_count");
+                return nodosCount > 0 && aristasCount > 0;
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ Error al verificar si la base de datos tiene datos: " + e.getMessage());
+        }
+        return false;
+    }
+
     public boolean isConnected() {
         try {
             return isConnected && connection != null && !connection.isClosed();
@@ -230,15 +238,4 @@ public class DatabaseConnection {
         }
     }
 
-    /**
-     * Método para limpiar recursos
-     * 
-     * @deprecated Use try-with-resources or explicit disconnect() instead
-     */
-    @Deprecated(since = "9")
-    @Override
-    protected void finalize() throws Throwable {
-        disconnect();
-        super.finalize();
-    }
 }
