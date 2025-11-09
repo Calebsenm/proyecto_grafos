@@ -70,6 +70,7 @@ public class AristaDAO {
         return aristas;
     }
 
+    /* 
     public List<Edge> obtenerAristasHaciaNodo(String nombreNodo) {
         List<Edge> aristas = new ArrayList<>();
         String sql = "SELECT a.distancia, n1.nombre AS origen_nombre, n2.nombre AS destino_nombre " +
@@ -100,7 +101,7 @@ public class AristaDAO {
 
         return aristas;
     }
-
+*/
     public List<Edge> obtenerAristasEntreNodos(String nodoOrigen, String nodoDestino) {
         List<Edge> aristas = new ArrayList<>();
         String sql = "SELECT a.distancia, n1.nombre AS origen_nombre, n2.nombre AS destino_nombre " +

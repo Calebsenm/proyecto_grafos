@@ -2,17 +2,8 @@ package com.grafos_colombia.graph;
 
 import java.util.*;
 
-/**
- * Utility class to convert between different graph representations
- */
 public class GraphConverter {
 
-    /**
-     * Convert adjacency list and edge list to GraphView format
-     * @param adjList
-     * @param edges
-     * @return 
-     */
     public static GraphViewData convertToGraphView(Map<String, List<Edge>> adjList, List<Edge> edges) {
         List<GraphNode> nodes = new ArrayList<>();
         List<GraphEdge> graphEdges = new ArrayList<>();
@@ -39,13 +30,7 @@ public class GraphConverter {
         return new GraphViewData(nodes, graphEdges);
     }
 
-    /**
-     * Convert adjacency list with Node objects to GraphView format
-     *
-     * @param adjList
-     * @param edges
-     * @return
-     */
+    
     public static GraphViewData convertNodeAdjList(Map<String, List<Node>> adjList, List<Edge> edges) {
         List<GraphNode> nodes = new ArrayList<>();
         List<GraphEdge> graphEdges = new ArrayList<>();
