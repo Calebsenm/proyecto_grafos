@@ -36,7 +36,7 @@ import javafx.scene.layout.VBox;
 /**
  * Controlador principal de la aplicación de grafos de Colombia
  */
-public class MainController implements Initializable {
+public class mainController implements Initializable {
 
     // FXML Components
     @FXML
