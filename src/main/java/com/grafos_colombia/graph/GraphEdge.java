@@ -8,13 +8,15 @@ public class GraphEdge {
     private GraphNode source;
     private GraphNode target;
     private double weight;
-    private boolean isHighlighted;
+    private int highlightLevel;
+    private double highlightWidth;
 
     public GraphEdge(GraphNode source, GraphNode target, double weight) {
         this.source = source;
         this.target = target;
         this.weight = weight;
-        this.isHighlighted = false;
+        this.highlightLevel = 0;
+        this.highlightWidth = 0;
     }
 
     // Getters and Setters
@@ -43,11 +45,28 @@ public class GraphEdge {
     }
 
     public boolean isHighlighted() {
-        return isHighlighted;
+        return highlightLevel > 0;
     }
 
     public void setHighlighted(boolean highlighted) {
-        this.isHighlighted = highlighted;
+        this.highlightLevel = highlighted ? 1 : 0;
+        this.highlightWidth = highlighted ? 3.0 : 0.0;
+    }
+
+    public int getHighlightLevel() {
+        return highlightLevel;
+    }
+
+    public void setHighlightLevel(int highlightLevel) {
+        this.highlightLevel = Math.max(0, highlightLevel);
+    }
+
+    public double getHighlightWidth() {
+        return highlightWidth;
+    }
+
+    public void setHighlightWidth(double highlightWidth) {
+        this.highlightWidth = Math.max(0.0, highlightWidth);
     }
 
     // Utility methods

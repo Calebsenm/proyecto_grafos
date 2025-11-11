@@ -36,6 +36,7 @@
                     <RadioButton fx:id="shortestPathRadio" text="Ruta más Corta y Alternativa" toggleGroup="$calculationTypeGroup" onAction="#handleCalculationTypeChange" selected="true" />
                     <RadioButton fx:id="simpleCycleRadio" text="Ciclo Simple" toggleGroup="$calculationTypeGroup" onAction="#handleCalculationTypeChange" />
                     <RadioButton fx:id="eccentricityRadio" text="Excentricidad de un Nodo" toggleGroup="$calculationTypeGroup" onAction="#handleCalculationTypeChange" />
+                    <RadioButton fx:id="graphMetricsRadio" text="Métricas del Grafo" toggleGroup="$calculationTypeGroup" onAction="#handleCalculationTypeChange" />
                 </VBox>
                 
                 <Separator />
@@ -56,6 +57,8 @@
                     <Button fx:id="calculateButton" onAction="#calculateShortestPath" prefWidth="120" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold;" text="Calcular Ruta" />
                     <Button fx:id="clearButton" onAction="#clearResults" prefWidth="80" style="-fx-background-color: #e74c3c; -fx-text-fill: white;" text="Limpiar" />
                 </HBox>
+                
+                <Button fx:id="toggleRouteButton" onAction="#toggleRouteView" maxWidth="1.7976931348623157E308" style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-font-weight: bold;" text="Ver Ruta Alternativa" visible="false" managed="false" />
                 
                 <Separator />
                 

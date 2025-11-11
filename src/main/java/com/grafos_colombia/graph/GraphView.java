@@ -62,12 +62,26 @@ public class GraphView {
 
     // Colors
     private static final Color NODE_COLOR = Color.LIGHTBLUE;
-    private static final Color HIGHLIGHTED_NODE_COLOR = Color.RED;
+    private static final Color PRIMARY_NODE_HIGHLIGHT_COLOR = Color.web("#e74c3c");
+    private static final Color SECONDARY_NODE_HIGHLIGHT_COLOR = Color.web("#9b59b6");
+    private static final Color RADIO_NODE_HIGHLIGHT_COLOR = Color.web("#3498db");
+    private static final Color CENTER_NODE_HIGHLIGHT_COLOR = Color.web("#2ecc71");
+    private static final Color DIAMETER_NODE_HIGHLIGHT_COLOR = Color.web("#e74c3c");
     private static final Color DRAGGING_NODE_COLOR = Color.ORANGE;
     private static final Color EDGE_COLOR = Color.GRAY;
-    private static final Color HIGHLIGHTED_EDGE_COLOR = Color.BLUE;
+    private static final Color PRIMARY_EDGE_HIGHLIGHT_COLOR = Color.web("#e74c3c");
+    private static final Color SECONDARY_EDGE_HIGHLIGHT_COLOR = Color.web("#9b59b6");
+    private static final Color RADIO_EDGE_HIGHLIGHT_COLOR = Color.web("#3498db");
+    private static final Color CENTER_EDGE_HIGHLIGHT_COLOR = Color.web("#2ecc71");
+    private static final Color DIAMETER_EDGE_HIGHLIGHT_COLOR = Color.web("#e74c3c");
     private static final Color TEXT_COLOR = Color.BLACK;
     private static final Color BACKGROUND_COLOR = Color.web("#ecf0f1");
+
+    private static final int HIGHLIGHT_LEVEL_PRIMARY_ROUTE = 1;
+    private static final int HIGHLIGHT_LEVEL_ALTERNATE_ROUTE = 2;
+    private static final int HIGHLIGHT_LEVEL_RADIO = 3;
+    private static final int HIGHLIGHT_LEVEL_DIAMETER = 4;
+    private static final int HIGHLIGHT_LEVEL_CENTER = 5;
 
     public GraphView(Canvas canvas) {
         this.canvas = canvas;
@@ -384,20 +398,36 @@ public class GraphView {
      * Draw edges with smooth curves
      */
     private void drawEdges() {
-        gc.setStroke(EDGE_COLOR);
-        gc.setLineWidth(1.0 / viewportZoom);
-
         for (GraphEdge edge : edges) {
             GraphNode source = edge.getSource();
             GraphNode target = edge.getTarget();
 
-            if (edge.isHighlighted()) {
-                gc.setStroke(HIGHLIGHTED_EDGE_COLOR);
-                gc.setLineWidth(3.0 / viewportZoom);
-            } else {
-                gc.setStroke(EDGE_COLOR);
-                gc.setLineWidth(1.0 / viewportZoom);
+            int highlightLevel = edge.getHighlightLevel();
+            Color edgeColor = EDGE_COLOR;
+            switch (highlightLevel) {
+                case HIGHLIGHT_LEVEL_PRIMARY_ROUTE:
+                    edgeColor = PRIMARY_EDGE_HIGHLIGHT_COLOR;
+                    break;
+                case HIGHLIGHT_LEVEL_ALTERNATE_ROUTE:
+                    edgeColor = SECONDARY_EDGE_HIGHLIGHT_COLOR;
+                    break;
+                case HIGHLIGHT_LEVEL_RADIO:
+                    edgeColor = RADIO_EDGE_HIGHLIGHT_COLOR;
+                    break;
+                case HIGHLIGHT_LEVEL_DIAMETER:
+                    edgeColor = DIAMETER_EDGE_HIGHLIGHT_COLOR;
+                    break;
+                case HIGHLIGHT_LEVEL_CENTER:
+                    edgeColor = CENTER_EDGE_HIGHLIGHT_COLOR;
+                    break;
+                default:
+                    edgeColor = EDGE_COLOR;
             }
+
+            double lineWidth = edge.getHighlightWidth() > 0 ? edge.getHighlightWidth() : 1.0;
+
+            gc.setStroke(edgeColor);
+            gc.setLineWidth(lineWidth / viewportZoom);
 
             // Draw smooth curve
             double x1 = source.getX();
@@ -439,13 +469,30 @@ public class GraphView {
             double radius = node.getRadius(); // Use a fixed radius in world coordinates
 
             // Choose node color
-            Color nodeColor;
+            Color nodeColor = NODE_COLOR;
+            int highlightLevel = node.getHighlightLevel();
             if (node.isDragging()) {
                 nodeColor = DRAGGING_NODE_COLOR;
-            } else if (node.isFixed()) {
-                nodeColor = HIGHLIGHTED_NODE_COLOR;
             } else {
-                nodeColor = NODE_COLOR;
+                switch (highlightLevel) {
+                    case HIGHLIGHT_LEVEL_PRIMARY_ROUTE:
+                        nodeColor = PRIMARY_NODE_HIGHLIGHT_COLOR;
+                        break;
+                    case HIGHLIGHT_LEVEL_ALTERNATE_ROUTE:
+                        nodeColor = SECONDARY_NODE_HIGHLIGHT_COLOR;
+                        break;
+                    case HIGHLIGHT_LEVEL_RADIO:
+                        nodeColor = RADIO_NODE_HIGHLIGHT_COLOR;
+                        break;
+                    case HIGHLIGHT_LEVEL_DIAMETER:
+                        nodeColor = DIAMETER_NODE_HIGHLIGHT_COLOR;
+                        break;
+                    case HIGHLIGHT_LEVEL_CENTER:
+                        nodeColor = CENTER_NODE_HIGHLIGHT_COLOR;
+                        break;
+                    default:
+                        nodeColor = NODE_COLOR;
+                }
             }
 
             // Draw node circle
@@ -613,42 +660,142 @@ public class GraphView {
      * Highlight path nodes and edges
      * @param pathNodeIds
      */
-    public void highlightPath(List<String> pathNodeIds) {
-        // Clear previous highlights
+    private void clearHighlightState() {
         for (GraphNode node : nodes) {
+            node.setHighlightLevel(0);
             node.setFixed(false);
         }
         for (GraphEdge edge : edges) {
-            edge.setHighlighted(false);
+            edge.setHighlightLevel(0);
+            edge.setHighlightWidth(0.0);
+        }
+    }
+
+    private GraphEdge findEdgeBetween(GraphNode source, GraphNode target) {
+        for (GraphEdge edge : edges) {
+            if (edge.connects(source, target)) {
+                return edge;
+            }
+        }
+        return null;
+    }
+
+    private void applyPathHighlight(List<String> pathNodeIds, int highlightLevel, double lineWidth) {
+        if (pathNodeIds == null || pathNodeIds.isEmpty()) {
+            return;
         }
 
-        // Highlight path nodes
         for (String nodeId : pathNodeIds) {
             GraphNode node = nodeMap.get(nodeId);
             if (node != null) {
+                node.setHighlightLevel(highlightLevel);
                 node.setFixed(true);
             }
         }
 
-        // Highlight path edges
         for (int i = 0; i < pathNodeIds.size() - 1; i++) {
-            String sourceId = pathNodeIds.get(i);
-            String targetId = pathNodeIds.get(i + 1);
-
-            GraphNode source = nodeMap.get(sourceId);
-            GraphNode target = nodeMap.get(targetId);
-
+            GraphNode source = nodeMap.get(pathNodeIds.get(i));
+            GraphNode target = nodeMap.get(pathNodeIds.get(i + 1));
             if (source != null && target != null) {
-                for (GraphEdge edge : edges) {
-                    if (edge.connects(source, target)) {
-                        edge.setHighlighted(true);
-                        break;
-                    }
+                GraphEdge edge = findEdgeBetween(source, target);
+                if (edge != null) {
+                    edge.setHighlightLevel(highlightLevel);
+                    edge.setHighlightWidth(lineWidth);
+                }
+            }
+        }
+    }
+
+    public void highlightRoutes(List<String> primaryPathNodeIds,
+                                List<String> alternativePathNodeIds,
+                                boolean invertColors) {
+        clearHighlightState();
+
+        boolean hasPrimary = primaryPathNodeIds != null && !primaryPathNodeIds.isEmpty();
+        boolean hasAlternative = alternativePathNodeIds != null && !alternativePathNodeIds.isEmpty();
+
+        if (!hasPrimary && !hasAlternative) {
+            render();
+            return;
+        }
+
+        int primaryLevel = invertColors ? HIGHLIGHT_LEVEL_ALTERNATE_ROUTE : HIGHLIGHT_LEVEL_PRIMARY_ROUTE;
+        int alternativeLevel = invertColors ? HIGHLIGHT_LEVEL_PRIMARY_ROUTE : HIGHLIGHT_LEVEL_ALTERNATE_ROUTE;
+
+        if (hasPrimary && hasAlternative) {
+            if (invertColors) {
+                applyPathHighlight(primaryPathNodeIds, primaryLevel, 3.0);
+                applyPathHighlight(alternativePathNodeIds, alternativeLevel, 4.0);
+            } else {
+                applyPathHighlight(alternativePathNodeIds, alternativeLevel, 3.0);
+                applyPathHighlight(primaryPathNodeIds, primaryLevel, 4.0);
+            }
+        } else {
+            if (hasPrimary) {
+                applyPathHighlight(primaryPathNodeIds, primaryLevel, 4.0);
+            }
+            if (hasAlternative) {
+                applyPathHighlight(alternativePathNodeIds, alternativeLevel, 3.0);
+            }
+        }
+
+        render();
+    }
+
+    public void highlightPath(List<String> pathNodeIds) {
+        highlightRoutes(pathNodeIds, null, false);
+    }
+
+    public void highlightRadioPath(List<String> pathNodeIds) {
+        clearHighlightState();
+        if (pathNodeIds != null && !pathNodeIds.isEmpty()) {
+            applyPathHighlight(pathNodeIds, HIGHLIGHT_LEVEL_RADIO, 4.0);
+        }
+        render();
+    }
+
+    public void highlightDiameterPath(List<String> pathNodeIds) {
+        clearHighlightState();
+        if (pathNodeIds != null && !pathNodeIds.isEmpty()) {
+            applyPathHighlight(pathNodeIds, HIGHLIGHT_LEVEL_DIAMETER, 4.5);
+        }
+        render();
+    }
+
+    public void highlightCenterNodes(List<String> nodeIds) {
+        highlightNodesInternal(nodeIds, HIGHLIGHT_LEVEL_CENTER);
+    }
+
+    private void highlightNodesInternal(List<String> nodeIds, int highlightLevel) {
+        clearHighlightState();
+
+        if (nodeIds != null) {
+            for (String nodeId : nodeIds) {
+                GraphNode node = nodeMap.get(nodeId);
+                if (node != null) {
+                    node.setHighlightLevel(highlightLevel);
+                    node.setFixed(true);
                 }
             }
         }
 
-        // Redraw the canvas to show the highlighted path
+        render();
+    }
+
+    /**
+     * Highlight only nodes without highlighting edges (useful for center nodes)
+     * @param nodeIds List of node IDs to highlight
+     */
+    public void highlightNodes(List<String> nodeIds) {
+        highlightNodesInternal(nodeIds, HIGHLIGHT_LEVEL_PRIMARY_ROUTE);
+    }
+
+    public void highlightNodesWithLevel(List<String> nodeIds, int highlightLevel) {
+        highlightNodesInternal(nodeIds, highlightLevel);
+    }
+
+    public void clearHighlights() {
+        clearHighlightState();
         render();
     }
 

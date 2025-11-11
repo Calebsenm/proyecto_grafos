@@ -13,6 +13,7 @@ public class GraphNode {
     private Point2D velocity;
     private boolean isFixed;
     private boolean isDragging;
+    private int highlightLevel;
     private double radius;
 
     // Geographic coordinates
@@ -29,6 +30,7 @@ public class GraphNode {
         this.radius = 8.0;
         this.latitude = 0.0;
         this.longitude = 0.0;
+        this.highlightLevel = 0;
     }
 
     public GraphNode(String id, String name, double x, double y) {
@@ -97,6 +99,14 @@ public class GraphNode {
 
     public void setDragging(boolean dragging) {
         this.isDragging = dragging;
+    }
+
+    public int getHighlightLevel() {
+        return highlightLevel;
+    }
+
+    public void setHighlightLevel(int highlightLevel) {
+        this.highlightLevel = Math.max(0, highlightLevel);
     }
 
     public double getRadius() {
