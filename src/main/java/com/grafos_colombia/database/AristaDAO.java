@@ -39,69 +39,6 @@ public class AristaDAO {
         return aristas;
     }
 
-    public List<Edge> obtenerAristasDesdeNodo(String nombreNodo) {
-        List<Edge> aristas = new ArrayList<>();
-        String sql = "SELECT a.distancia, n1.nombre AS origen_nombre, n2.nombre AS destino_nombre " +
-                     "FROM arista a " +
-                     "JOIN nodo n1 ON a.origen_id = n1.id " +
-                     "JOIN nodo n2 ON a.destino_id = n2.id " +
-                     "WHERE n1.nombre = ? " +
-                     "ORDER BY n2.nombre";
-
-        try (Connection conn = dbConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, nombreNodo);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    Edge arista = new Edge(
-                        rs.getString("origen_nombre"),
-                        rs.getString("destino_nombre"),
-                        rs.getDouble("distancia")
-                    );
-                    aristas.add(arista);
-                }
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Error al obtener aristas desde nodo: " + e.getMessage());
-        }
-
-        return aristas;
-    }
-
-    /* 
-    public List<Edge> obtenerAristasHaciaNodo(String nombreNodo) {
-        List<Edge> aristas = new ArrayList<>();
-        String sql = "SELECT a.distancia, n1.nombre AS origen_nombre, n2.nombre AS destino_nombre " +
-                     "FROM arista a " +
-                     "JOIN nodo n1 ON a.origen_id = n1.id " +
-                     "JOIN nodo n2 ON a.destino_id = n2.id " +
-                     "WHERE n2.nombre = ? " +
-                     "ORDER BY n1.nombre";
-
-        try (Connection conn = dbConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, nombreNodo);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    Edge arista = new Edge(
-                        rs.getString("origen_nombre"),
-                        rs.getString("destino_nombre"),
-                        rs.getDouble("distancia")
-                    );
-                    aristas.add(arista);
-                }
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Error al obtener aristas hacia nodo: " + e.getMessage());
-        }
-
-        return aristas;
-    }
-*/
     public List<Edge> obtenerAristasEntreNodos(String nodoOrigen, String nodoDestino) {
         List<Edge> aristas = new ArrayList<>();
         String sql = "SELECT a.distancia, n1.nombre AS origen_nombre, n2.nombre AS destino_nombre " +
@@ -161,45 +98,6 @@ public class AristaDAO {
         }
     }
 
-    public boolean actualizarArista(String nodoOrigen, String nodoDestino, double nuevaDistancia) {
-        String sql = "UPDATE arista SET distancia = ? " +
-                     "WHERE origen_id = (SELECT id FROM nodo WHERE nombre = ?) " +
-                     "AND destino_id = (SELECT id FROM nodo WHERE nombre = ?)";
-
-        try (Connection conn = dbConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setDouble(1, nuevaDistancia);
-            stmt.setString(2, nodoOrigen);
-            stmt.setString(3, nodoDestino);
-
-            return stmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            System.err.println("Error al actualizar arista: " + e.getMessage());
-            return false;
-        }
-    }
-
-    public boolean eliminarArista(String nodoOrigen, String nodoDestino) {
-        String sql = "DELETE FROM arista " +
-                     "WHERE origen_id = (SELECT id FROM nodo WHERE nombre = ?) " +
-                     "AND destino_id = (SELECT id FROM nodo WHERE nombre = ?)";
-
-        try (Connection conn = dbConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, nodoOrigen);
-            stmt.setString(2, nodoDestino);
-
-            return stmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            System.err.println("Error al eliminar arista: " + e.getMessage());
-            return false;
-        }
-    }
-
     public boolean existeArista(String nodoOrigen, String nodoDestino) {
         String sql = "SELECT COUNT(*) FROM arista a " +
                      "JOIN nodo n1 ON a.origen_id = n1.id " +
@@ -219,32 +117,6 @@ public class AristaDAO {
             System.err.println("Error al verificar arista: " + e.getMessage());
             return false;
         }
-    }
-
-    public Map<String, Object> obtenerEstadisticas() {
-        Map<String, Object> stats = new HashMap<>();
-        String sql = "SELECT COUNT(*) AS total, " +
-                     "AVG(distancia) AS promedio, " +
-                     "MIN(distancia) AS minima, " +
-                     "MAX(distancia) AS maxima " +
-                     "FROM arista";
-
-        try (Connection conn = dbConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-
-            if (rs.next()) {
-                stats.put("total_aristas", rs.getInt("total"));
-                stats.put("distancia_promedio", rs.getDouble("promedio"));
-                stats.put("distancia_minima", rs.getDouble("minima"));
-                stats.put("distancia_maxima", rs.getDouble("maxima"));
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Error en estadísticas: " + e.getMessage());
-        }
-
-        return stats;
     }
 
     /** Guardar arista si no existe (bidireccional) */

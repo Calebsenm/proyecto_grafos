@@ -28,55 +28,25 @@
             <version>${javafx.version}</version>
         </dependency>
         
-        <!-- Connection Pool for Database -->
+
+        
+        <!-- SQLite JDBC -->
         <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <version>5.0.1</version>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.47.0.0</version>
         </dependency>
         
-        <!-- Logging Framework -->
+        <!-- SLF4J (required by sqlite-jdbc) -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>2.0.7</version>
         </dependency>
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.4.8</version>
-        </dependency>
-        
-        <!-- JSON Processing for Configuration -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.15.2</version>
-        </dependency>
-        
-        <!-- ✅ Flyway para migraciones -->
-        <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-core</artifactId>
-            <version>10.18.2</version>
-        </dependency>
-        
-        <!-- ✅ SQLite JDBC -->
-        <dependency>
-            <groupId>org.xerial</groupId>
-            <artifactId>sqlite-jdbc</artifactId>
-            <version>3.47.0.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.hibernate.validator</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <version>8.0.1.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.expressly</groupId>
-            <artifactId>expressly</artifactId>
-            <version>5.0.0</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>2.0.7</version>
         </dependency>
         
     </dependencies>
@@ -97,11 +67,6 @@
                 <version>0.0.8</version>  <!-- ✅ Versión actualizada -->
                 <configuration>
                     <mainClass>com.grafos_colombia.App</mainClass>
-                    <options>
-                        <!-- This passes the arguments to the JVM at runtime -->
-                        <option>--add-modules</option>
-                        <option>org.xerial.sqlitejdbc,flyway.core</option>
-                    </options>
                 </configuration>
             </plugin>
             
@@ -120,10 +85,6 @@
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>com.grafos_colombia.Main</mainClass>
-                                </transformer>
-                                <!-- Incluir todos los recursos -->
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-                                    <resource>db/migration</resource>
                                 </transformer>
                             </transformers>
                             <finalName>grafos-colombia-app</finalName>

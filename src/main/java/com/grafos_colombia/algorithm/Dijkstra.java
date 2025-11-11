@@ -69,8 +69,4 @@ public class Dijkstra {
 
         return new PathResult(dist.get(end), path);
     }
-
-    public PathResult dijkstra(String start, String end) {
-        return dijkstra(start, end, null);
-    }
 }

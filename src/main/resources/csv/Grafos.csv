@@ -140,20 +140,20 @@ El Carmen de Bolivar,El Ceibal,44.3
 El Carmen de Bolivar,El Bongo,40.2
 El Ceibal ,Calamar - Barranca Nueva,23
 El Ceibal ,El Viso,25,3
-Calamar - Barranca Nueva,El Viso,
-Estacion Tren Chia,Briceno,
-Estacion Tren Chia,Zipaquira,
-La Paz,Valledupar,
-La Paz,San Juan Cesar - Villanueva,
-La Paz,Agustin Codazzi,
-Agustin Codazzi,La Jagua de Ibidrico,
-Agustin Codazzi,Cuatro Vientos,
-Cuatro vientos,El Pital,
-Cuatro vientos,La Albania,
-El Pital ,La Jagua de Ibidrico,
-El Pital ,San Roque,
-La Jagua de Ibidrico,San Roque,
-San Roque,El Burro,
+Calamar - Barranca Nueva,El Viso,45.4
+Estacion Tren Chia,Briceno,13.1
+Estacion Tren Chia,Zipaquira,25.4
+La Paz,Valledupar,14.3
+La Paz,San Juan Cesar - Villanueva,51.7 
+La Paz,Agustin Codazzi,44.4
+Agustin Codazzi,La Jagua de Ibidrico,54.9
+Agustin Codazzi,Cuatro Vientos,67.1
+Cuatro vientos,El Pital,18
+Cuatro vientos,La Albania,39.1
+El Pital ,La Jagua de Ibidrico,37.8
+El Pital ,San Roque,39.4
+La Jagua de Ibidrico,San Roque,42.6
+San Roque,El Burro,57.2
 Pueblo Nuevo,Las Marias,
 Pueblo Nuevo,La Albania,
 La Albania,El Banco,
@@ -161,11 +161,11 @@ La Albania,Santa Catalina,
 El Banco,Santa Catalina,
 El Banco,El Burro,
 Santa Catalina,Talaga Nuevo,
-El Burro,La Mata,
-La Mata,El Cruce,
+El Burro,La Mata,31
+La Mata,El Cruce,40.8
 La Mata,El Astillero,
 El Cruce,Sardinata,
-El Cruce,San Alverto,
+El Cruce,San Alverto,63.4
 Sardinata,El Astillero,
 Sardinata,Convencion,
 El Astillero,El zulia,
@@ -173,7 +173,7 @@ Caucasia,El Hatillo,
 Caucasia,Delores,
 Santiago de Tolu,El Viso,
 Santiago de Tolu,Sincelejo,
-Sincelejo,El Bongo,
+Sincelejo,El Bongo,31
 El Bongo,Providencia,
 Providencia,Talaga Nuevo,
 El zulia,Cucuta,
@@ -190,26 +190,27 @@ Puente Monoga,Malaga,
 Malaga,Soata,
 Malaga,Los Curos,
 Malaga,Planplona,
-Los Curos,Bucaramanga,
+Los Curos,Bucaramanga,32.2
 Los Curos,Santa Rosita,
 San Alverto,La Fortuna,
-San Alverto,Bucaramanga,
+San Alverto,Bucaramanga,106
 La Fortuna,Bucaramanga,
 La Fortuna,Villa Rosa,
 Bucaramanga,Zapatoca,
 Zapatoca,Villa Rosa,
 Zapatoca,San Guil,
 San Guil,Zapatoca,
-San Guil,Santa Rosita,
+San Guil,Santa Rosita,110
 San Guil,Vado Real,
+San Guil,Los Curos,69.5
 Soata,Mirador el Nevado,
 Soata,Paz de Rio,
 Mirador el Nevado,Santa Rosita,
 Mirador el Nevado,Paz de Rio,
-Santa Rosita,Belen,
+Santa Rosita,Belen,41.9
 Paz de rio,Belen,
 Paz de rio,Bonza,
-Belen,Bonza,
+Belen,Bonza,27.9
 Bonza,Cachipay,
 Bonza,Tunja,
 Tunja,Parador puente camacho,
@@ -229,13 +230,13 @@ Chiquinquira,Ubate,
 Chiquinquira,Tres esquinas,
 Tres esquinas ,Sanchica,
 Tres esquinas ,Cucunuba,
-Parador puente camacho,Bonza,
-Parador puente camacho,Tibaita,
-Tibaita,Tibirita,
-Tibirita,El Sisga,
+Parador puente camacho,Bonza,82.3
+Parador puente camacho,Tibaita,62.6
+Tibaita,Tibirita,28.1
+Tibirita,El Sisga,27.8
 Choconta,Cucunuba,
 Choconta,El Sisga,
-El Sisga,Briceno,
+El Sisga,Briceno,33.7
 Ubate,Cucunuba,
 Ubate,Zipaquira,
 Zipaquira,El Dindal,

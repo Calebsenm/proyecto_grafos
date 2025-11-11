@@ -17,39 +17,32 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        
         try {
-            // Load FXML from the correct path
-            Parent root = FXMLLoader.load(getClass().getResource("/com/grafos_colombia/main.fxml"));
-            Scene scene = new Scene(root, 1200, 600); // Set initial size
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/com/grafos_colombia/main.fxml"));
+            
+            if (loader.getLocation() == null) {
+                System.err.println("Error: No se encontró main.fxml en /com/grafos_colombia/main.fxml");
+                System.err.println("Intentando ruta alternativa...");
+                loader.setLocation(getClass().getResource("main.fxml"));
+            }
+            
+            Parent root = loader.load();
+            Scene scene = new Scene(root, 1200, 600);
             stage.setTitle("Visualizador de Rutas de Colombia");
             stage.setScene(scene);
             stage.setMinWidth(800);
-            stage.setMinHeight(500); // Reduced min height for smaller screens
+            stage.setMinHeight(500);
             stage.show();
-        } catch (IOException e) {
-            System.err.println("Error loading FXML: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Error cargando FXML: " + e.getMessage());
             e.printStackTrace();
-            
-            // Show a simple error scene if FXML fails to load
-            javafx.scene.control.Label errorLabel = new javafx.scene.control.Label("Error loading application: " + e.getMessage());
-            errorLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: red;");
-            Scene errorScene = new Scene(new javafx.scene.layout.StackPane(errorLabel), 400, 200);
-            stage.setTitle("Error - Dijkstra App");
-            stage.setScene(errorScene);
-            stage.show();
+            throw e;
         }
     }
 
     public static void main(String[] args) {
-        // Inicializar base de datos
-        try {
-            DatabaseMigration.init();
-        } catch (Exception e) {
-            System.err.println("Error inicializando BD: " + e.getMessage());
-            // Continuar de todas formas
-        }
-
+        DatabaseMigration.init();
         launch();
     }
 
