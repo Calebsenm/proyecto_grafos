@@ -385,12 +385,12 @@ public class AppController implements Initializable {
             Dialog<Void> dialog = new Dialog<>();
             dialog.setTitle("Métricas del Grafo");
             dialog.setHeaderText("Información detallada del grafo");
-            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.initModality(Modality.NONE);
             dialog.initStyle(StageStyle.DECORATED);
             dialog.setDialogPane(dialogPane);
             dialog.setResizable(true);
 
-            dialog.showAndWait();
+            dialog.show();
         } catch (IOException ex) {
             showAlert("Error", "No se pudo abrir el diálogo de métricas", ex.getMessage(), Alert.AlertType.ERROR);
         }
