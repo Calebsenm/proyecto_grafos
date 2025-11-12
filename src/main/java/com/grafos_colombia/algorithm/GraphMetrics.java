@@ -29,6 +29,8 @@ public class GraphMetrics {
         public final String nodoReferenciaDiametro;
         public final List<String> rutaRadio;
         public final List<String> rutaDiametro;
+        public final List<String> nodosRadio;
+        public final List<String> nodosDiametro;
 
         public GraphMetricsResult(double radio, double diametro, List<String> centro,
                                   Map<String, Double> excentricidades,
@@ -36,7 +38,9 @@ public class GraphMetrics {
                                   String nodoReferenciaRadio,
                                   String nodoReferenciaDiametro,
                                   List<String> rutaRadio,
-                                  List<String> rutaDiametro) {
+                                  List<String> rutaDiametro,
+                                  List<String> nodosRadio,
+                                  List<String> nodosDiametro) {
             this.radio = radio;
             this.diametro = diametro;
             this.centro = centro;
@@ -46,6 +50,8 @@ public class GraphMetrics {
             this.nodoReferenciaDiametro = nodoReferenciaDiametro;
             this.rutaRadio = rutaRadio;
             this.rutaDiametro = rutaDiametro;
+            this.nodosRadio = nodosRadio;
+            this.nodosDiametro = nodosDiametro;
         }
 
         @Override
@@ -85,6 +91,8 @@ public class GraphMetrics {
                     unicoNodo,
                     unicoNodo,
                     List.of(unicoNodo),
+                    List.of(unicoNodo),
+                    List.of(unicoNodo),
                     List.of(unicoNodo));
         }
 
@@ -97,6 +105,8 @@ public class GraphMetrics {
         String nodoMaxExcentricidad = null;
         List<String> rutaRadio = null;
         List<String> rutaDiametro = null;
+        List<String> nodosRadio = new ArrayList<>();
+        List<String> nodosDiametro = new ArrayList<>();
 
         // Calcular la excentricidad de cada nodo
         for (String nodo : adjList.keySet()) {
@@ -128,11 +138,31 @@ public class GraphMetrics {
                 minExcentricidad = excentricidad;
                 nodoMinExcentricidad = nodo;
                 rutaRadio = (resultado.path != null) ? new ArrayList<>(resultado.path) : null;
+                nodosRadio.clear();
+                if (resultado.path != null) {
+                    nodosRadio.addAll(resultado.path);
+                } else {
+                    nodosRadio.add(nodo);
+                }
+            } else if (Math.abs(excentricidad - minExcentricidad) < 0.0001) {
+                if (resultado.path != null && nodosRadio.isEmpty()) {
+                    nodosRadio.addAll(resultado.path);
+                }
             }
             if (excentricidad > maxExcentricidad) {
                 maxExcentricidad = excentricidad;
                 nodoMaxExcentricidad = nodo;
                 rutaDiametro = (resultado.path != null) ? new ArrayList<>(resultado.path) : null;
+                nodosDiametro.clear();
+                if (resultado.path != null) {
+                    nodosDiametro.addAll(resultado.path);
+                } else {
+                    nodosDiametro.add(nodo);
+                }
+            } else if (Math.abs(excentricidad - maxExcentricidad) < 0.0001) {
+                if (resultado.path != null && nodosDiametro.isEmpty()) {
+                    nodosDiametro.addAll(resultado.path);
+                }
             }
         }
 
@@ -175,6 +205,12 @@ public class GraphMetrics {
         if (rutaDiametro == null) {
             rutaDiametro = Collections.emptyList();
         }
+        if (nodosRadio.isEmpty() && nodoMinExcentricidad != null) {
+            nodosRadio.add(nodoMinExcentricidad);
+        }
+        if (nodosDiametro.isEmpty() && nodoMaxExcentricidad != null) {
+            nodosDiametro.add(nodoMaxExcentricidad);
+        }
 
         return new GraphMetricsResult(
                 minExcentricidad,
@@ -185,7 +221,9 @@ public class GraphMetrics {
                 nodoMinExcentricidad,
                 nodoMaxExcentricidad,
                 rutaRadio,
-                rutaDiametro);
+                rutaDiametro,
+                nodosRadio,
+                nodosDiametro);
     }
 
     /**

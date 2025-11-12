@@ -19,15 +19,15 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.scene.canvas.Canvas;
-import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.StageStyle;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
+import java.io.IOException;
 
 /**
  * Controlador principal simplificado - Solo carga CSV->BD->Grafo
@@ -375,275 +375,25 @@ public class AppController implements Initializable {
     }
     
     private void showMetricsDialog(GraphMetrics.GraphMetricsResult metricas) {
-        // Crear el diálogo
-        Dialog<Void> dialog = new Dialog<>();
-        dialog.setTitle("Métricas del Grafo");
-        dialog.setHeaderText("Información detallada del grafo");
-        dialog.initModality(Modality.APPLICATION_MODAL);
-        dialog.initStyle(StageStyle.DECORATED);
-        
-        // Crear el contenido principal
-        VBox content = new VBox(15);
-        content.setPadding(new Insets(20));
-        content.setStyle("-fx-background-color: white;");
-        
-        // Título
-        Label titleLabel = new Label("Métricas del Grafo");
-        titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
-        
-        // Panel de métricas principales
-        VBox metricsPanel = new VBox(10);
-        metricsPanel.setPadding(new Insets(15));
-        metricsPanel.setStyle("-fx-background-color: #ecf0f1; -fx-background-radius: 5;");
-        
-        // Radio
-        HBox radioBox = new HBox(10);
-        Label radioLabel = new Label("📏 Radio:");
-        radioLabel.setStyle("-fx-font-weight: bold; -fx-min-width: 120;");
-        Label radioValue = new Label(String.format("%.2f km", metricas.radio));
-        radioValue.setStyle("-fx-text-fill: #3498db; -fx-font-weight: bold; -fx-font-size: 14px;");
-        radioBox.getChildren().addAll(radioLabel, radioValue);
-        
-        // Diámetro
-        HBox diametroBox = new HBox(10);
-        Label diametroLabel = new Label("📐 Diámetro:");
-        diametroLabel.setStyle("-fx-font-weight: bold; -fx-min-width: 120;");
-        Label diametroValue = new Label(String.format("%.2f km", metricas.diametro));
-        diametroValue.setStyle("-fx-text-fill: #e74c3c; -fx-font-weight: bold; -fx-font-size: 14px;");
-        diametroBox.getChildren().addAll(diametroLabel, diametroValue);
-        
-        // Centro
-        HBox centroBox = new HBox(10);
-        Label centroLabel = new Label("🎯 Centro:");
-        centroLabel.setStyle("-fx-font-weight: bold; -fx-min-width: 120;");
-        String centroText = metricas.centro.isEmpty() ? "Ninguno" : 
-                String.join(", ", metricas.centro) + 
-                String.format(" (%d nodo%s)", metricas.centro.size(), 
-                        metricas.centro.size() != 1 ? "s" : "");
-        Label centroValue = new Label(centroText);
-        centroValue.setStyle("-fx-text-fill: #2ecc71; -fx-font-weight: bold; -fx-font-size: 14px;");
-        centroBox.getChildren().addAll(centroLabel, centroValue);
-        
-        metricsPanel.getChildren().addAll(radioBox, diametroBox, centroBox);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/grafos_colombia/metrics_dialog.fxml"));
+            DialogPane dialogPane = loader.load();
 
-        HBox metricHighlightButtons = new HBox(10);
-        metricHighlightButtons.setPadding(new Insets(5, 0, 0, 0));
+            MetricsDialogController controller = loader.getController();
+            controller.setData(metricas, graphView);
 
-        Button radioHighlightButton = new Button("Resaltar Radio");
-        radioHighlightButton.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold;");
-        radioHighlightButton.setOnAction(e -> {
-            if (graphView == null) return;
-            if (metricas.rutaRadio != null && !metricas.rutaRadio.isEmpty()) {
-                graphView.highlightRadioPath(metricas.rutaRadio);
-            } else if (!metricas.centro.isEmpty()) {
-                // Si no tenemos ruta específica, resaltar nodos del centro
-                graphView.highlightCenterNodes(metricas.centro);
-            }
-        });
+            Dialog<Void> dialog = new Dialog<>();
+            dialog.setTitle("Métricas del Grafo");
+            dialog.setHeaderText("Información detallada del grafo");
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.initStyle(StageStyle.DECORATED);
+            dialog.setDialogPane(dialogPane);
+            dialog.setResizable(true);
 
-        Button diametroHighlightButton = new Button("Resaltar Diámetro");
-        diametroHighlightButton.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold;");
-        diametroHighlightButton.setOnAction(e -> {
-            if (graphView == null) return;
-            if (metricas.rutaDiametro != null && !metricas.rutaDiametro.isEmpty()) {
-                graphView.highlightDiameterPath(metricas.rutaDiametro);
-            }
-        });
-
-        Button centroHighlightButton = new Button("Resaltar Centro");
-        centroHighlightButton.setStyle("-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-weight: bold;");
-        centroHighlightButton.setOnAction(e -> {
-            if (graphView == null) return;
-            if (!metricas.centro.isEmpty()) {
-                graphView.highlightCenterNodes(metricas.centro);
-            }
-        });
-
-        metricHighlightButtons.getChildren().addAll(radioHighlightButton, diametroHighlightButton, centroHighlightButton);
-        
-        // Tabla de excentricidades
-        Label tableTitle = new Label("Excentricidades de los Nodos");
-        tableTitle.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
-        
-        TableView<EccentricityData> table = new TableView<>();
-        table.setPrefHeight(380);
-        table.setMinHeight(300);
-        table.setMaxHeight(500);
-        table.setPrefWidth(600);
-        
-        // Columna de nodo - usando Callback directamente para mayor compatibilidad
-        TableColumn<EccentricityData, String> nodoColumn = new TableColumn<>("Nodo");
-        nodoColumn.setCellValueFactory(cellData -> {
-            EccentricityData data = cellData.getValue();
-            return data != null ? data.nodoProperty() : new SimpleStringProperty("");
-        });
-        nodoColumn.setPrefWidth(280);
-        nodoColumn.setResizable(true);
-        nodoColumn.setSortable(true);
-        
-        // Columna de excentricidad
-        TableColumn<EccentricityData, String> excentricidadColumn = new TableColumn<>("Excentricidad (km)");
-        excentricidadColumn.setCellValueFactory(cellData -> {
-            EccentricityData data = cellData.getValue();
-            return data != null ? data.excentricidadProperty() : new SimpleStringProperty("");
-        });
-        excentricidadColumn.setPrefWidth(180);
-        excentricidadColumn.setResizable(true);
-        excentricidadColumn.setSortable(true);
-        
-        // Columna de centro
-        TableColumn<EccentricityData, String> centroColumn = new TableColumn<>("Es Centro");
-        centroColumn.setCellValueFactory(cellData -> {
-            EccentricityData data = cellData.getValue();
-            return data != null ? data.esCentroProperty() : new SimpleStringProperty("");
-        });
-        centroColumn.setPrefWidth(120);
-        centroColumn.setResizable(true);
-        centroColumn.setSortable(false);
-        
-        table.getColumns().add(nodoColumn);
-        table.getColumns().add(excentricidadColumn);
-        table.getColumns().add(centroColumn);
-        table.setPlaceholder(new Label("No hay datos de excentricidad disponibles"));
-        
-        // Preparar datos para la tabla
-        ObservableList<EccentricityData> tableData = FXCollections.observableArrayList();
-        List<Map.Entry<String, Double>> excentricidadesOrdenadas = new ArrayList<>(
-                metricas.excentricidades.entrySet());
-        excentricidadesOrdenadas.sort((a, b) -> {
-            double excA = a.getValue();
-            double excB = b.getValue();
-            // Manejar infinitos
-            if (Double.isInfinite(excA) && Double.isInfinite(excB)) return 0;
-            if (Double.isInfinite(excA)) return 1;
-            if (Double.isInfinite(excB)) return -1;
-            return Double.compare(excA, excB);
-        });
-        
-        int validCount = 0;
-        for (Map.Entry<String, Double> entry : excentricidadesOrdenadas) {
-            double exc = entry.getValue();
-            if (exc != Double.POSITIVE_INFINITY && 
-                exc != Double.NEGATIVE_INFINITY && 
-                !Double.isNaN(exc)) {
-                boolean esCentro = metricas.centro.contains(entry.getKey());
-                EccentricityData data = new EccentricityData(entry.getKey(), exc, esCentro);
-                tableData.add(data);
-                validCount++;
-            }
+            dialog.showAndWait();
+        } catch (IOException ex) {
+            showAlert("Error", "No se pudo abrir el diálogo de métricas", ex.getMessage(), Alert.AlertType.ERROR);
         }
-        
-        // Verificar que tenemos datos antes de asignarlos a la tabla
-        System.out.println("Datos preparados para la tabla: " + validCount + " nodos válidos");
-        System.out.println("Total de datos en tableData: " + tableData.size());
-        
-        table.setItems(tableData);
-        
-        // Forzar actualización de la tabla
-        if (tableData.isEmpty()) {
-            System.out.println("ADVERTENCIA: No hay datos válidos para mostrar en la tabla");
-        } else {
-            table.refresh();
-        }
-
-        TextArea detailArea = new TextArea();
-        detailArea.setEditable(false);
-        detailArea.setWrapText(true);
-        detailArea.setPrefHeight(140);
-        detailArea.setStyle("-fx-font-family: 'Consolas'; -fx-font-size: 13px;");
-        detailArea.setPromptText("Selecciona un nodo en la tabla para ver el recorrido de su excentricidad.");
-
-        table.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
-            if (newValue == null) {
-                detailArea.clear();
-                if (graphView != null && metricas.centro != null && !metricas.centro.isEmpty()) {
-                    graphView.highlightCenterNodes(metricas.centro);
-                }
-                return;
-            }
-
-            String nodo = newValue.getNodo();
-            Eccentricity.EccentricityResult detalle = metricas.detallesExcentricidad.get(nodo);
-            if (detalle == null) {
-                detailArea.setText("No hay información disponible para el nodo " + nodo);
-                return;
-            }
-
-            String destino = detalle.farthestNode != null ? detalle.farthestNode : "No disponible";
-            double distancia = detalle.eccentricity;
-            List<String> ruta = detalle.path;
-            String rutaTexto = (ruta != null && !ruta.isEmpty())
-                    ? String.join(" → ", ruta)
-                    : "Sin ruta disponible";
-
-            detailArea.setText(String.format(
-                    "Nodo origen: %s%nNodo más lejano: %s%nExcentricidad: %.2f km%n%nRuta vinculada:%n%s",
-                    nodo, destino, distancia, rutaTexto));
-
-            if (graphView != null && ruta != null && !ruta.isEmpty()) {
-                graphView.highlightRadioPath(ruta);
-            }
-        });
-        
-        // Aplicar estilo a las filas del centro
-        table.setRowFactory(tv -> {
-            TableRow<EccentricityData> row = new TableRow<EccentricityData>() {
-                @Override
-                protected void updateItem(EccentricityData item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty || item == null) {
-                        setStyle("");
-                    } else if (item.isCentro()) {
-                        setStyle("-fx-background-color: #d5f4e6; -fx-font-weight: bold;");
-                    } else {
-                        setStyle("");
-                    }
-                }
-            };
-            return row;
-        });
-        
-        // Configurar estilo de la tabla
-        table.setStyle("-fx-font-size: 12px;");
-        table.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
-        
-        // Agregar todo al contenido
-        Label detailLabel = new Label("Detalle de la excentricidad");
-        detailLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
-        content.getChildren().addAll(titleLabel, metricsPanel, metricHighlightButtons, tableTitle, table, detailLabel, detailArea);
-        
-        // Configurar el diálogo
-        dialog.getDialogPane().setContent(content);
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-        dialog.getDialogPane().setPrefSize(680, 650);
-        dialog.setResizable(true);
-        
-        // Estilo del diálogo
-        dialog.getDialogPane().setStyle("-fx-background-color: white;");
-        
-        // Configurar el botón de cerrar
-        Button closeButton = (Button) dialog.getDialogPane().lookupButton(ButtonType.CLOSE);
-        if (closeButton != null) {
-            closeButton.setText("Cerrar");
-            closeButton.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 16 8 16;");
-        }
-        
-        // Verificar que la tabla tenga datos antes de mostrar
-        System.out.println("Estado final de la tabla - Items: " + table.getItems().size());
-        System.out.println("Columnas en la tabla: " + table.getColumns().size());
-        
-        // Forzar actualización visual de la tabla
-        Platform.runLater(() -> {
-            table.refresh();
-            if (table.getItems().isEmpty()) {
-                System.out.println("ADVERTENCIA: La tabla está vacía después de configurarla");
-            } else {
-                System.out.println("Tabla configurada correctamente con " + table.getItems().size() + " elementos");
-            }
-        });
-        
-        // Mostrar el diálogo
-        dialog.showAndWait();
     }
     
     private void showAlert(String title, String header, String content, Alert.AlertType type) {
@@ -652,12 +402,6 @@ public class AppController implements Initializable {
         alert.setHeaderText(header);
         alert.setContentText(content);
         alert.showAndWait();
-    }
-
-    private void displayResult(PathResult r) {
-        distanceLabel.setText(String.format("%.1f km", r.distance));
-        statsLabel.setText("Nodos: " + r.path.size() + " | Aristas: " + (r.path.size() - 1));
-        pathResultArea.setText(String.join(" → ", r.path));
     }
 
     private void displayResultWithAlternative(PathResult primary, PathResult alternative) {

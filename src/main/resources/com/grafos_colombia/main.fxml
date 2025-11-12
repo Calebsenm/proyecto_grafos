@@ -87,26 +87,28 @@
     
     <!-- Bottom: Results Panel -->
     <bottom>
-        <VBox minHeight="120" spacing="8" style="-fx-background-color: #34495e; -fx-padding: 12;">
-            
-            <!-- Top row with main stats -->
-            <HBox alignment="CENTER_LEFT" spacing="25.0">
-                <VBox HBox.hgrow="NEVER">
-                    <Label style="-fx-text-fill: #bdc3c7; -fx-font-size: 11px;" text="DISTANCIA TOTAL" />
-                    <Label fx:id="distanceLabel" style="-fx-text-fill: #2ecc71; -fx-font-size: 22px; -fx-font-weight: bold;" text="0.0 km" />
+        <VBox style="-fx-background-color: #eef1f5; -fx-padding: 12; -fx-border-color: #d5d9e0; -fx-border-width: 1 0 0 0;">
+            <Label style="-fx-text-fill: #2c3e50; -fx-font-size: 12px; -fx-font-weight: bold;" text="Resultados"/>
+            <HBox spacing="16.0" alignment="CENTER_LEFT" style="-fx-padding: 6 0 6 0;">
+                <VBox spacing="4.0">
+                    <Label style="-fx-text-fill: #6c7a89; -fx-font-size: 11px;" text="DISTANCIA TOTAL"/>
+                    <Label fx:id="distanceLabel" style="-fx-text-fill: #1abc9c; -fx-font-size: 22px; -fx-font-weight: bold;" text="0.0 km"/>
                 </VBox>
-                <VBox HBox.hgrow="NEVER">
-                    <Label style="-fx-text-fill: #bdc3c7; -fx-font-size: 11px;" text="ESTADÍSTICAS" />
-                    <Label fx:id="statsLabel" style="-fx-text-fill: #f39c12; -fx-font-size: 14px;" text="Nodos: 0 | Aristas: 0" />
+                <VBox spacing="4.0">
+                    <Label style="-fx-text-fill: #6c7a89; -fx-font-size: 11px;" text="ESTADÍSTICAS"/>
+                    <Label fx:id="statsLabel" style="-fx-text-fill: #e67e22; -fx-font-size: 14px;" text="Nodos: 0 | Aristas: 0"/>
                 </VBox>
             </HBox>
-            
-            <!-- Bottom row with detailed path -->
-            <VBox spacing="4" VBox.vgrow="ALWAYS">
-                <Label style="-fx-text-fill: #bdc3c7; -fx-font-size: 11px;" text="RUTA DETALLADA" />
-                <TextArea fx:id="pathResultArea" editable="false" prefRowCount="2" style="-fx-font-family: 'Consolas'; -fx-font-size: 14px; -fx-control-inner-background: white; -fx-text-fill: black;" wrapText="false" VBox.vgrow="ALWAYS" />
-            </VBox>
-
+            <BorderPane prefHeight="200.0">
+                <top>
+                    <Label text="Detalle" style="-fx-text-fill: #2c3e50; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                </top>
+                <center>
+                    <TextArea fx:id="pathResultArea" editable="false"
+                              style="-fx-font-family: 'Consolas'; -fx-font-size: 13px; -fx-control-inner-background: white; -fx-text-fill: black;"
+                              wrapText="true" BorderPane.alignment="CENTER"/>
+                </center>
+            </BorderPane>
         </VBox>
     </bottom>
     
