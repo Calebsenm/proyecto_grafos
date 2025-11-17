@@ -96,7 +96,7 @@ Bayunca,Sabanalarga,62.5
 Bayunca,Arrollo Grande,21.6
 Pontezuela,Arrollo Grande,22
 Arrollo Grande,Loma de Arena,12.8
-Loma de arena ,Santa Veronica,30.1
+Loma de Arena ,Santa Veronica,30.1
 Santa Veronica,Barranquilla,41.1
 Santa Veronica,Baranoa,26.8
 Santa Veronica,Usiacuri,32.3
@@ -154,111 +154,110 @@ El Pital ,La Jagua de Ibidrico,37.8
 El Pital ,San Roque,39.4
 La Jagua de Ibidrico,San Roque,42.6
 San Roque,El Burro,57.2
-Pueblo Nuevo,Las Marias,
-Pueblo Nuevo,La Albania,
-La Albania,El Banco,
-La Albania,Santa Catalina,
-El Banco,Santa Catalina,
-El Banco,El Burro,
-Santa Catalina,Talaga Nuevo,
+Pueblo Nuevo,Las Marias,17.3
+Pueblo Nuevo,La Albania,52,9
+La Albania,El Banco,73.8
+La Albania,Santa Catalina,68.9
+El Banco,Santa Catalina,64.7 
+El Banco,El Burro,47
+Santa Catalina,Talaga Nuevo,35.1
 El Burro,La Mata,31
 La Mata,El Cruce,40.8
-La Mata,El Astillero,
-El Cruce,Sardinata,
+La Mata,El Astillero,260
+El Cruce,Sardinata,190
 El Cruce,San Alverto,63.4
-Sardinata,El Astillero,
-Sardinata,Convencion,
-El Astillero,El zulia,
-Caucasia,El Hatillo,
-Caucasia,Delores,
-Santiago de Tolu,El Viso,
-Santiago de Tolu,Sincelejo,
+Sardinata,El Astillero,35.2
+Sardinata,Convencion,64.6
+El Astillero,El zulia,27.2
+Caucasia,El Hatillo,251
+Caucasia,Delores,219
+Santiago de Tolu,El Viso,92.2
+Santiago de Tolu,Sincelejo,39.6
 Sincelejo,El Bongo,31
-El Bongo,Providencia,
-Providencia,Talaga Nuevo,
-El zulia,Cucuta,
-El zulia,Convencion,
-Cucuta,La Donjuana,
-La Donjuana,Planplona,
-La Donjuana,Puente Monoga,
-Panplona,Convencion,
-Panplona,Puente Monoga,
-Panplona,Malaga,
-Panplona,Bucaramanga
-Puente Monoga,Planplona,
-Puente Monoga,Malaga,
-Malaga,Soata,
-Malaga,Los Curos,
-Malaga,Planplona,
+El Bongo,Providencia,37.5
+Providencia,Talaga Nuevo,56.9
+El zulia,Cucuta,12.6
+El zulia,Convencion,21.3
+Cucuta,La Donjuana,30.8 
+La Donjuana,Planplona,46.6
+La Donjuana,Puente Monoga,78.2
+Panplona,Convencion,110
+Panplona,Puente Monoga,36.3
+Panplona,Malaga,134
+Panplona,Bucaramanga,132
+Puente Monoga,Planplona,36.2
+Puente Monoga,Malaga,148
+Malaga,Soata,66.2
+Malaga,Los Curos,123
+Malaga,Planplona,134
 Los Curos,Bucaramanga,32.2
-Los Curos,Santa Rosita,
-San Alverto,La Fortuna,
+San Alverto,La Fortuna,87.1
 San Alverto,Bucaramanga,106
-La Fortuna,Bucaramanga,
-La Fortuna,Villa Rosa,
-Bucaramanga,Zapatoca,
-Zapatoca,Villa Rosa,
-Zapatoca,San Guil,
-San Guil,Zapatoca,
+La Fortuna,Bucaramanga,69.5
+La Fortuna,Villa Rosa,37.5
+Bucaramanga,Zapatoca,60.2
+Zapatoca,Villa Rosa,101
+Zapatoca,San Guil,83.1
 San Guil,Santa Rosita,110
-San Guil,Vado Real,
+San Guil,Vado Real,79.7
 San Guil,Los Curos,69.5
-Soata,Mirador el Nevado,
-Soata,Paz de Rio,
-Mirador el Nevado,Santa Rosita,
-Mirador el Nevado,Paz de Rio,
+Soata,Mirador el Nevado,28.6
+Soata,Paz de Rio,246
+Mirador el Nevado,Santa Rosita,8.8
+Mirador el Nevado,Paz de Rio,41.6
 Santa Rosita,Belen,41.9
-Paz de rio,Belen,
-Paz de rio,Bonza,
+Paz de rio,Belen,23.6
+Paz de rio,Bonza,65.8
 Belen,Bonza,27.9
-Bonza,Cachipay,
-Bonza,Tunja,
-Tunja,Parador puente camacho,
-Tunja,Choconta,
-Tunja,Sanchica,
-Tunja,Arcabuco
-Villa Rosa,Zapatoca,
-Villa Rosa,Puerto Araujo,
-Puerto Araujo,El Encanto,
-Puerto Araujo,Barbosa,
-Barbosa,Chiquinquira,
-Barbosa,Vado Real,
-Barbosa,Arcabuco,
-Barbosa,Sanchica,
-Chiquinquira,Puerto Narino,
-Chiquinquira,Ubate,
-Chiquinquira,Tres esquinas,
-Tres esquinas ,Sanchica,
-Tres esquinas ,Cucunuba,
+Bonza,Cachipay,86.3
+Bonza,Tunja,53.1
+Tunja,Parador puente camacho,25.6
+Tunja,Choconta,66.3
+Tunja,Sanchica,31.8
+Tunja,Arcabuco,35.3
+Villa Rosa,Zapatoca,101
+Villa Rosa,Puerto Araujo,55.5
+Puerto Araujo,El Encanto,22.6
+Puerto Araujo,Barbosa,138
+Barbosa,Chiquinquira,51.5
+Barbosa,Vado Real,37.8
+Vado Real,Bonza,89.1
+Barbosa,Arcabuco,34.3
+Barbosa,Sanchica,53.6
+Chiquinquira,Puerto Narino,183
+Chiquinquira,Ubate,51.5
+Chiquinquira,Tres esquinas,31.1
+Tres esquinas ,Sanchica,18.4
+Tres esquinas ,Cucunuba,54.1
 Parador puente camacho,Bonza,82.3
 Parador puente camacho,Tibaita,62.6
 Tibaita,Tibirita,28.1
 Tibirita,El Sisga,27.8
-Choconta,Cucunuba,
-Choconta,El Sisga,
+Choconta,Cucunuba,27.2
+Choconta,El Sisga,8.7
 El Sisga,Briceno,33.7
-Ubate,Cucunuba,
-Ubate,Zipaquira,
-Zipaquira,El Dindal,
-Zipaquira,Briceno,
-Puerto Narino ,El Encanto,
-Puerto Narino ,Chiquinquira,
-Puerto Narino ,Puerto Salgar,
-Puerto Narino ,Medellin,
-El Dindal,Puerto Salgar,
-El Dindal,Guaduas,
-Villeta,Guaduas,
-Villeta,Pantanillo,
-El Viso,La Matea,
-El Encanto,Delores,
-El Encanto,Puerto Araujo,
-Delores,El Hatillo,
-El Hatillo,Medellin,
-Medellin,El Tres,
-Medellin,Puerto Salgar,
-Puerto Salgar,Honda,
-Honda,Guaduas,
-Las Marias,Santa Rosa de Lima,
-San Juan de Uraba, El Tres,
-Cachipay ,San Guil,
-Cachipay,Belen,
+Ubate,Cucunuba,7.6
+Ubate,Zipaquira,47.2
+Zipaquira,El Dindal,135
+Zipaquira,Briceno,22.1
+Puerto Narino ,El Encanto,83
+Puerto Narino ,Chiquinquira,183
+Puerto Narino ,Puerto Salgar,59.2
+Puerto Narino ,Medellin,207
+El Dindal,Puerto Salgar,40.6
+El Dindal,Guaduas,33.8
+Villeta,Guaduas,38.9
+Villeta,Pantanillo,26.4
+El Viso,La Matea,11.7
+El Encanto,Delores,94.9
+El Encanto,Puerto Araujo,43.4
+Delores,El Hatillo,84.5
+El Hatillo,Medellin,31.1
+Medellin,El Tres,316
+Medellin,Puerto Salgar,277
+Puerto Salgar,Honda,38.7
+Honda,Guaduas,34
+Las Marias,Santa Rosa de Lima,69.3
+San Juan de Uraba, El Tres,109
+Cachipay ,San Guil,50
+Cachipay,Belen,69.2
