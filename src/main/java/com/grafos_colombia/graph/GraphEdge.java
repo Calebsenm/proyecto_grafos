@@ -1,8 +1,6 @@
 package com.grafos_colombia.graph;
 
-/**
- * Represents an edge in the graph visualization
- */
+
 public class GraphEdge {
 
     private GraphNode source;
@@ -19,7 +17,7 @@ public class GraphEdge {
         this.highlightWidth = 0;
     }
 
-    // Getters and Setters
+
     public GraphNode getSource() {
         return source;
     }
@@ -69,7 +67,7 @@ public class GraphEdge {
         this.highlightWidth = Math.max(0.0, highlightWidth);
     }
 
-    // Utility methods
+
     public double getLength() {
         return source.distanceTo(target);
     }

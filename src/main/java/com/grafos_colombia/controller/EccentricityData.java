@@ -3,9 +3,6 @@ package com.grafos_colombia.controller;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-/**
- * Clase modelo para representar los datos de excentricidad en la tabla
- */
 public class EccentricityData {
     private final StringProperty nodo;
     private final StringProperty excentricidad;

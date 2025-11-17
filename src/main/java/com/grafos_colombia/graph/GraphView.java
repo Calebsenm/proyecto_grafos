@@ -13,41 +13,29 @@ import javafx.scene.text.TextAlignment;
 import javafx.geometry.VPos;
 import javafx.scene.text.FontWeight;
 
-/**
- * Advanced graph visualization component with force-directed layout
- */
+
 public class GraphView {
 
     private Canvas canvas;
     private GraphicsContext gc;
-
-    // Graph data
     private List<GraphNode> nodes;
     private List<GraphEdge> edges;
     private Map<String, GraphNode> nodeMap;
-
-    // Viewport properties
     private double viewportX = 0.0;
     private double viewportY = 0.0;
     private double viewportZoom = 1.0;
     private double minZoom = 0.01;
     private double maxZoom = 10.0;
-
-
-    // Interaction properties
     private boolean isPanning = false;
     private double lastMouseX = 0.0;
     private double lastMouseY = 0.0;
     private GraphNode draggedNode = null;
     private double dragOffsetX = 0.0;
     private double dragOffsetY = 0.0;
-
-    // Rendering properties
     private boolean showEdgeWeights = true;
     private boolean showNodeLabels = true;
     private boolean isAnimating = false;
 
-    // Layout options
     public enum LayoutType {
         FORCE_DIRECTED,
         GEOGRAPHIC,
@@ -56,11 +44,10 @@ public class GraphView {
     private LayoutType currentLayout = LayoutType.GEOGRAPHIC;
     private AnimationTimer animationTimer;
 
-    // New force-directed layout properties from GraphPanel
+
     private double temperature = 0;
     private static final int NODE_DIAMETER = 16;
 
-    // Colors
     private static final Color NODE_COLOR = Color.LIGHTBLUE;
     private static final Color PRIMARY_NODE_HIGHLIGHT_COLOR = Color.web("#e74c3c");
     private static final Color SECONDARY_NODE_HIGHLIGHT_COLOR = Color.web("#9b59b6");
@@ -93,34 +80,24 @@ public class GraphView {
         setupEventHandlers();
     }
 
-    /**
-     * Initialize graph with nodes and edges
-     *
-     * @param nodes
-     * @param edges
-     */
+
     public void initializeGraph(List<GraphNode> nodes, List<GraphEdge> edges) {
         this.nodes = new ArrayList<>(nodes);
         this.edges = new ArrayList<>(edges);
         this.nodeMap.clear();
 
-        // Build node map for quick lookup
+     
         for (GraphNode node : nodes) {
             nodeMap.put(node.getId(), node);
         }
 
-        // Initialize positions based on current layout type
+       
         applyLayout();
     }
 
-    /**
-     * Initialize node positions randomly
-     */
-    /**
-     * Apply layout based on current layout type
-     */
+ 
     private void applyLayout() {
-        // Apply appropriate sorting before layout
+    
         applyOptimalSorting();
 
         switch (currentLayout) {
@@ -134,9 +111,7 @@ public class GraphView {
         }
     }
 
-    /**
-     * Apply optimal sorting based on current layout type
-     */
+  
     private void applyOptimalSorting() {
         if (nodes.isEmpty()) {
             return;
@@ -147,26 +122,22 @@ public class GraphView {
                 sortNodesByGeographicCoordinates();
                 break;
             case FORCE_DIRECTED:
-                // Keep original order for force-directed
+               
                 break;
         }
     }
 
-    /**
-     * Sort nodes alphabetically
-     */
+  
     private void sortNodesAlphabetically() {
     }
 
-    /**
-     * Apply geographic layout using real coordinates
-     */
+
     private void applyGeographicLayout() {
         if (nodes.isEmpty()) {
             return;
         }
 
-        // Find bounds of coordinates
+    
         double minLat = Double.MAX_VALUE, maxLat = Double.MIN_VALUE;
         double minLon = Double.MAX_VALUE, maxLon = Double.MIN_VALUE;
 
@@ -179,16 +150,15 @@ public class GraphView {
             }
         }
 
-        // If no geographic data, fallback to circular layout
         if (minLat == Double.MAX_VALUE) {
-            // If no geo data, maybe default to force-directed? For now, we do nothing.
+       
             return;
         }
 
-        // Calculate scaling factors
+
         double canvasWidth = canvas.getWidth();
         double canvasHeight = canvas.getHeight();
-        double padding = 50; // Padding from edges
+        double padding = 50; 
 
         double latRange = maxLat - minLat;
         double lonRange = maxLon - minLon;
@@ -196,25 +166,22 @@ public class GraphView {
         double scaleX = (canvasWidth - 2 * padding) / lonRange;
         double scaleY = (canvasHeight - 2 * padding) / latRange;
 
-        // Apply geographic positions
+
         for (GraphNode node : nodes) {
             if (node.getLatitude() != 0 || node.getLongitude() != 0) {
                 double x = padding + (node.getLongitude() - minLon) * scaleX;
-                double y = padding + (maxLat - node.getLatitude()) * scaleY; // Invert Y for screen coordinates
+                double y = padding + (maxLat - node.getLatitude()) * scaleY; 
                 node.setPosition(x, y);
             } else {
-                // Fallback to center for nodes without coordinates
+
                 node.setPosition(canvasWidth / 2, canvasHeight / 2);
             }
         }
 
-        // Render once without animation
+
         render();
     }
 
-    /**
-     * Initialize node positions randomly (for force-directed layout)
-     */
     private void initializeRandomPositions() {
         Random random = new Random();
         double centerX = canvas.getWidth() / 2.0;
@@ -229,10 +196,6 @@ public class GraphView {
         }
     }
 
-    /**
-     * Set the layout type and apply it
-     * @param layoutType
-     */
     public void setLayoutType(LayoutType layoutType) {
         this.currentLayout = layoutType;
         if (nodes != null && !nodes.isEmpty()) {
@@ -240,34 +203,26 @@ public class GraphView {
         }
     }
 
-    /**
-     * Get current layout type
-     * @return 
-     */
+ 
     public LayoutType getCurrentLayout() {
         return currentLayout;
     }
 
-    /**
-     * Sort nodes by geographic coordinates for better visualization
-     */
+
     private void sortNodesByGeographicCoordinates() {
         nodes.sort((node1, node2) -> {
-            // First sort by latitude (north to south)
+           
             int latCompare = Double.compare(node1.getLatitude(), node2.getLatitude());
             if (latCompare != 0) {
                 return latCompare;
             }
-            // Then sort by longitude (west to east)
             return Double.compare(node1.getLongitude(), node2.getLongitude());
         });
     }
 
-    /**
-     * Start the force-directed layout animation
-     */
+
     private void startLayoutAnimation() {
-        // Initialize temperature for simulated annealing
+      
         if (canvas != null) {
             this.temperature = canvas.getWidth() / 10.0;
         }
@@ -282,7 +237,7 @@ public class GraphView {
             public void handle(long now) {
                 if (temperature > 0.1) {
                     updateForces();
-                    // Cool down
+                
                     temperature *= 0.99;
                 } else {
                     stopLayoutAnimation();
@@ -293,9 +248,6 @@ public class GraphView {
         animationTimer.start();
     }
 
-    /**
-     * Stop the layout animation
-     */
     public void stopLayoutAnimation() {
         isAnimating = false;
         if (animationTimer != null) {
@@ -303,9 +255,7 @@ public class GraphView {
         }
     }
 
-    /**
-     * Update forces for all nodes
-     */
+
     private void updateForces() {
         if (nodes.isEmpty() || canvas.getWidth() == 0 || canvas.getHeight() == 0) {
             return;
@@ -314,13 +264,13 @@ public class GraphView {
         double area = canvas.getWidth() * canvas.getHeight();
         double k = 1.2 * Math.sqrt(area / nodes.size());
 
-        // Create a map for forces for this iteration
+
         Map<GraphNode, Point2D> forces = new HashMap<>();
         for (GraphNode node : nodes) {
             forces.put(node, new Point2D(0, 0));
         }
 
-        // a. Calculate repulsion forces
+
         for (int i = 0; i < nodes.size(); i++) {
             for (int j = i + 1; j < nodes.size(); j++) {
                 GraphNode node1 = nodes.get(i);
@@ -330,7 +280,6 @@ public class GraphView {
                 double distance = Math.max(0.1, delta.magnitude());
                 double repulsiveForce = (k * k) / distance;
 
-                // "Personal space bubble" to prevent overlaps
                 if (distance < NODE_DIAMETER * 2.5) {
                     repulsiveForce *= 20;
                 }
@@ -341,7 +290,7 @@ public class GraphView {
             }
         }
 
-        // b. Calculate attraction forces
+    
         for (GraphEdge edge : edges) {
             GraphNode source = edge.getSource();
             GraphNode target = edge.getTarget();
@@ -355,7 +304,7 @@ public class GraphView {
             forces.put(target, forces.get(target).add(force));
         }
 
-        // c. Move nodes according to forces and temperature
+
         for (GraphNode node : nodes) {
             if (!node.isFixed() && !node.isDragging()) {
                 Point2D force = forces.get(node);
@@ -368,35 +317,24 @@ public class GraphView {
         }
     }
 
-    /**
-     * Render the graph
-     */
     public void render() {
-        // Clear canvas
+    
         gc.setFill(BACKGROUND_COLOR);
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
-        // Apply viewport transformations
         gc.save();
         gc.translate(-viewportX * viewportZoom, -viewportY * viewportZoom);
         gc.scale(viewportZoom, viewportZoom);
 
-        // Draw edges first (so they appear behind nodes)
         drawEdges();
-
-        // Draw nodes
         drawNodes();
-
-        // Restore transformations
         gc.restore();
 
-        // Draw UI elements (not affected by viewport)
+      
         drawUI();
     }
 
-    /**
-     * Draw edges with smooth curves
-     */
+
     private void drawEdges() {
         for (GraphEdge edge : edges) {
             GraphNode source = edge.getSource();
@@ -429,28 +367,27 @@ public class GraphView {
             gc.setStroke(edgeColor);
             gc.setLineWidth(lineWidth / viewportZoom);
 
-            // Draw smooth curve
+       
             double x1 = source.getX();
             double y1 = source.getY();
             double x2 = target.getX();
             double y2 = target.getY();
 
-            // Draw a straight line
+     
             gc.strokeLine(x1, y1, x2, y2);
 
-            // Draw edge weight
+        
             if (showEdgeWeights && viewportZoom > 0.5) {
                 double midX = (x1 + x2) / 2;
                 double midY = (y1 + y2) / 2;
 
-                // Background circle for weight
                 gc.setFill(Color.WHITE);
                 gc.fillOval(midX - 12, midY - 8, 24, 16);
                 gc.setStroke(Color.BLACK);
                 gc.setLineWidth(0.5 / viewportZoom);
                 gc.strokeOval(midX - 12, midY - 8, 24, 16);
 
-                // Weight text
+            
                 gc.setFill(TEXT_COLOR);
                 gc.setFont(Font.font("Arial", 8 / viewportZoom));
                 String weightText = String.format("%.1f", edge.getWeight());
@@ -459,16 +396,13 @@ public class GraphView {
         }
     }
 
-    /**
-     * Draw nodes
-     */
     private void drawNodes() {
         for (GraphNode node : nodes) {
             double x = node.getX();
             double y = node.getY();
-            double radius = node.getRadius(); // Use a fixed radius in world coordinates
+            double radius = node.getRadius(); 
 
-            // Choose node color
+      
             Color nodeColor = NODE_COLOR;
             int highlightLevel = node.getHighlightLevel();
             if (node.isDragging()) {
@@ -495,18 +429,17 @@ public class GraphView {
                 }
             }
 
-            // Draw node circle
             gc.setFill(nodeColor);
             gc.fillOval(x - radius, y - radius, radius * 2, radius * 2);
 
-            // Draw node border
+       
             gc.setStroke(Color.BLACK);
             gc.setLineWidth(1.0 / viewportZoom);
             gc.strokeOval(x - radius, y - radius, radius * 2, radius * 2);
 
-            // Draw node label
+     
             if (showNodeLabels && viewportZoom > 0.3) {
-                gc.setFill(Color.BLACK); // Use black text for better contrast on light blue
+                gc.setFill(Color.BLACK); 
                 gc.setFont(Font.font("Arial", FontWeight.BOLD, 10 / viewportZoom));
                 gc.setTextAlign(TextAlignment.CENTER);
                 gc.setTextBaseline(VPos.CENTER);
@@ -517,11 +450,9 @@ public class GraphView {
         }
     }
 
-    /**
-     * Draw UI elements
-     */
+  
     private void drawUI() {
-        // Zoom indicator
+      
         gc.setFill(Color.rgb(0, 0, 0, 0.8));
         gc.fillRoundRect(canvas.getWidth() - 160, 10, 150, 80, 8, 8);
 
@@ -545,18 +476,14 @@ public class GraphView {
         canvas.setOnScroll(this::handleScroll);
     }
 
-    /**
-     * Handle mouse press
-     */
+
     private void handleMousePressed(MouseEvent event) {
         double mouseX = event.getX();
         double mouseY = event.getY();
 
-        // Convert to world coordinates
         double worldX = (mouseX / viewportZoom) + viewportX;
         double worldY = (mouseY / viewportZoom) + viewportY;
 
-        // Check if clicking on a node
         GraphNode clickedNode = getNodeAt(worldX, worldY);
         if (clickedNode != null) {
             draggedNode = clickedNode;
@@ -564,28 +491,26 @@ public class GraphView {
             dragOffsetX = worldX - clickedNode.getX();
             dragOffsetY = worldY - clickedNode.getY();
         } else {
-            // Start panning
+    
             isPanning = true;
             lastMouseX = mouseX;
             lastMouseY = mouseY;
         }
     }
 
-    /**
-     * Handle mouse drag
-     */
+
     private void handleMouseDragged(MouseEvent event) {
         double mouseX = event.getX();
         double mouseY = event.getY();
 
         if (draggedNode != null) {
-            // Drag node
+        
             double worldX = (mouseX / viewportZoom) + viewportX;
             double worldY = (mouseY / viewportZoom) + viewportY;
             draggedNode.setPosition(worldX - dragOffsetX, worldY - dragOffsetY);
-            draggedNode.setVelocity(0, 0); // Stop node movement
+            draggedNode.setVelocity(0, 0); 
         } else if (isPanning) {
-            // Pan viewport
+        
             double deltaX = mouseX - lastMouseX;
             double deltaY = mouseY - lastMouseY;
             viewportX -= deltaX / viewportZoom;
@@ -597,9 +522,7 @@ public class GraphView {
         render();
     }
 
-    /**
-     * Handle mouse release
-     */
+
     private void handleMouseReleased(MouseEvent event) {
         if (draggedNode != null) {
             draggedNode.setDragging(false);
@@ -608,9 +531,6 @@ public class GraphView {
         isPanning = false;
     }
 
-    /**
-     * Handle mouse scroll (zoom)
-     */
     private void handleScroll(ScrollEvent event) {
         double zoomFactor = 1.1;
         double deltaY = event.getDeltaY();
@@ -624,7 +544,7 @@ public class GraphView {
         }
 
         if (oldZoom != viewportZoom) {
-            // Zoom towards mouse position
+    
             double mouseX = event.getX();
             double mouseY = event.getY();
 
@@ -640,9 +560,7 @@ public class GraphView {
         event.consume();
     }
 
-    /**
-     * Get node at specific world coordinates
-     */
+
     private GraphNode getNodeAt(double worldX, double worldY) {
         for (GraphNode node : nodes) {
             double dx = worldX - node.getX();
@@ -656,10 +574,7 @@ public class GraphView {
         return null;
     }
 
-    /**
-     * Highlight path nodes and edges
-     * @param pathNodeIds
-     */
+  
     private void clearHighlightState() {
         for (GraphNode node : nodes) {
             node.setHighlightLevel(0);
@@ -782,10 +697,7 @@ public class GraphView {
         render();
     }
 
-    /**
-     * Highlight only nodes without highlighting edges (useful for center nodes)
-     * @param nodeIds List of node IDs to highlight
-     */
+
     public void highlightNodes(List<String> nodeIds) {
         highlightNodesInternal(nodeIds, HIGHLIGHT_LEVEL_PRIMARY_ROUTE);
     }
@@ -799,9 +711,7 @@ public class GraphView {
         render();
     }
 
-    /**
-     * Center viewport on graph
-     */
+
     public void centerView() {
         if (nodes.isEmpty()) {
             return;
@@ -821,23 +731,17 @@ public class GraphView {
         render();
     }
 
-    /**
-     * Reset zoom and pan
-     */
     public void resetView() {
         viewportZoom = 1.0;
         centerView();
     }
 
-    /**
-     * Zoom in towards center of canvas
-     */
+
     public void zoomIn() {
         double oldZoom = viewportZoom;
         viewportZoom = Math.min(maxZoom, viewportZoom * 1.2);
 
         if (oldZoom != viewportZoom) {
-            // Zoom towards center of canvas
             double centerX = canvas.getWidth() / 2.0;
             double centerY = canvas.getHeight() / 2.0;
 
@@ -851,15 +755,12 @@ public class GraphView {
         }
     }
 
-    /**
-     * Zoom out from center of canvas
-     */
     public void zoomOut() {
         double oldZoom = viewportZoom;
         viewportZoom = Math.max(minZoom, viewportZoom / 1.2);
 
         if (oldZoom != viewportZoom) {
-            // Zoom from center of canvas
+          
             double centerX = canvas.getWidth() / 2.0;
             double centerY = canvas.getHeight() / 2.0;
 

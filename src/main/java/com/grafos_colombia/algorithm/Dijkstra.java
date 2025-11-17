@@ -40,7 +40,7 @@ public class Dijkstra {
             visited.add(u);
 
             if (u.equals(end)) {
-                break; // ya llegamos al destino
+                break; 
             }
             if (d > dist.get(u)) {
                 continue;
@@ -56,7 +56,7 @@ public class Dijkstra {
             }
         }
 
-        // reconstruir el camino
+     
         List<String> path = new ArrayList<>();
         String at = end;
         if (dist.get(end) != Double.POSITIVE_INFINITY) {
@@ -132,15 +132,6 @@ public class Dijkstra {
         }
     }
 
-    /**
-     * Encuentra una ruta alternativa (segunda ruta más corta) entre dos nodos.
-     * 
-     * @param start El nodo de inicio
-     * @param end El nodo de destino
-     * @param adjList La lista de adyacencia del grafo
-     * @param primaryPath La ruta principal (primera ruta más corta)
-     * @return Un PathResult con la ruta alternativa, o null si no existe
-     */
     public static PathResult findAlternativePath(String start, String end,
                                                   Map<String, List<Node>> adjList,
                                                   List<String> primaryPath) {

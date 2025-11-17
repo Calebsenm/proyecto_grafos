@@ -26,38 +26,21 @@ public class Graph {
         return adjList;
     }
 
-    /**
-     * Calcula el radio del grafo (excentricidad mínima entre todos los nodos).
-     * 
-     * @return El radio del grafo, o Double.POSITIVE_INFINITY si el grafo no es conexo.
-     */
+  
     public double getRadio() {
         return GraphMetrics.calcularRadio(adjList);
     }
 
-    /**
-     * Calcula el diámetro del grafo (excentricidad máxima entre todos los nodos).
-     * 
-     * @return El diámetro del grafo, o 0.0 si el grafo no es conexo o está vacío.
-     */
+   
     public double getDiametro() {
         return GraphMetrics.calcularDiametro(adjList);
     }
 
-    /**
-     * Calcula el centro del grafo (nodos con excentricidad igual al radio).
-     * 
-     * @return Una lista con los nodos del centro del grafo.
-     */
+  
     public List<String> getCentro() {
         return GraphMetrics.calcularCentro(adjList);
     }
 
-    /**
-     * Obtiene todas las métricas del grafo (radio, diámetro y centro).
-     * 
-     * @return Un objeto GraphMetricsResult con todas las métricas, o null si el grafo no es conexo.
-     */
     public GraphMetrics.GraphMetricsResult getMetricas() {
         return GraphMetrics.calcularMetricas(adjList);
     }

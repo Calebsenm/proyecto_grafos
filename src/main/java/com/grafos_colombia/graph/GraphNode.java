@@ -2,9 +2,7 @@ package com.grafos_colombia.graph;
 
 import javafx.geometry.Point2D;
 
-/**
- * Represents a node in the graph visualization
- */
+
 public class GraphNode {
 
     private String id;
@@ -16,7 +14,6 @@ public class GraphNode {
     private int highlightLevel;
     private double radius;
 
-    // Geographic coordinates
     private double latitude;
     private double longitude;
 

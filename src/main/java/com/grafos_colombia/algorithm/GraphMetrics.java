@@ -7,18 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Calcula las métricas del grafo: radio, diámetro y centro.
- * 
- * - Radio: La excentricidad mínima entre todos los nodos del grafo.
- * - Diámetro: La excentricidad máxima entre todos los nodos del grafo.
- * - Centro: El conjunto de nodos cuya excentricidad es igual al radio.
- */
+
 public class GraphMetrics {
 
-    /**
-     * Clase para almacenar los resultados de las métricas del grafo.
-     */
+   
     public static class GraphMetricsResult {
         public final double radio;
         public final double diametro;
@@ -61,19 +53,13 @@ public class GraphMetrics {
         }
     }
 
-    /**
-     * Calcula las métricas del grafo: radio, diámetro y centro.
-     * 
-     * @param adjList La lista de adyacencia del grafo.
-     * @return Un objeto GraphMetricsResult con las métricas calculadas.
-     *         Si el grafo está vacío o no es conexo, retorna null.
-     */
+ 
     public static GraphMetricsResult calcularMetricas(Map<String, List<Node>> adjList) {
         if (adjList == null || adjList.isEmpty()) {
             return null;
         }
 
-        // Caso especial: grafo con un solo nodo
+    
         if (adjList.size() == 1) {
             String unicoNodo = adjList.keySet().iterator().next();
             Map<String, Double> excentricidades = new HashMap<>();
@@ -108,12 +94,12 @@ public class GraphMetrics {
         List<String> nodosRadio = new ArrayList<>();
         List<String> nodosDiametro = new ArrayList<>();
 
-        // Calcular la excentricidad de cada nodo
+ 
         for (String nodo : adjList.keySet()) {
             Eccentricity.EccentricityResult resultado = Eccentricity.calculate(nodo, adjList);
             
             if (resultado == null) {
-                // Nodo aislado o no alcanzable
+  
                 excentricidades.put(nodo, Double.POSITIVE_INFINITY);
                 continue;
             }
@@ -122,18 +108,18 @@ public class GraphMetrics {
             excentricidades.put(nodo, excentricidad);
             detalles.put(nodo, resultado);
 
-            // Si la excentricidad es infinita, el grafo no es conexo
+      
             if (excentricidad == Double.POSITIVE_INFINITY || 
                 excentricidad == Double.NEGATIVE_INFINITY ||
                 Double.isNaN(excentricidad)) {
-                // Nodo no alcanzable desde otros nodos (grafo no conexo)
+        
                 continue;
             }
 
-            // Marcar que tenemos al menos una excentricidad válida
+          
             tieneExcentricidadesValidas = true;
 
-            // Actualizar mínimo y máximo
+          
             if (excentricidad < minExcentricidad) {
                 minExcentricidad = excentricidad;
                 nodoMinExcentricidad = nodo;
@@ -166,20 +152,20 @@ public class GraphMetrics {
             }
         }
 
-        // Si no encontramos excentricidades válidas, el grafo no es conexo
+  
         if (!tieneExcentricidadesValidas || minExcentricidad == Double.POSITIVE_INFINITY) {
             return null;
         }
 
-        // Encontrar el centro: nodos con excentricidad igual al radio
+  
         List<String> centro = new ArrayList<>();
         for (Map.Entry<String, Double> entrada : excentricidades.entrySet()) {
             double excentricidad = entrada.getValue();
-            // Solo considerar nodos con excentricidad válida (no infinita)
+   
             if (excentricidad != Double.POSITIVE_INFINITY && 
                 excentricidad != Double.NEGATIVE_INFINITY &&
                 !Double.isNaN(excentricidad)) {
-                // Usar una tolerancia pequeña para comparar números de punto flotante
+            
                 if (Math.abs(excentricidad - minExcentricidad) < 0.0001) {
                     centro.add(entrada.getKey());
                 }
@@ -226,34 +212,18 @@ public class GraphMetrics {
                 nodosDiametro);
     }
 
-    /**
-     * Calcula el radio del grafo (excentricidad mínima).
-     * 
-     * @param adjList La lista de adyacencia del grafo.
-     * @return El radio del grafo, o Double.POSITIVE_INFINITY si el grafo no es conexo.
-     */
+
     public static double calcularRadio(Map<String, List<Node>> adjList) {
         GraphMetricsResult resultado = calcularMetricas(adjList);
         return resultado != null ? resultado.radio : Double.POSITIVE_INFINITY;
     }
 
-    /**
-     * Calcula el diámetro del grafo (excentricidad máxima).
-     * 
-     * @param adjList La lista de adyacencia del grafo.
-     * @return El diámetro del grafo, o 0.0 si el grafo no es conexo o está vacío.
-     */
+
     public static double calcularDiametro(Map<String, List<Node>> adjList) {
         GraphMetricsResult resultado = calcularMetricas(adjList);
         return resultado != null ? resultado.diametro : 0.0;
     }
 
-    /**
-     * Calcula el centro del grafo (nodos con excentricidad igual al radio).
-     * 
-     * @param adjList La lista de adyacencia del grafo.
-     * @return Una lista con los nodos del centro, o lista vacía si el grafo no es conexo.
-     */
     public static List<String> calcularCentro(Map<String, List<Node>> adjList) {
         GraphMetricsResult resultado = calcularMetricas(adjList);
         return resultado != null ? resultado.centro : new ArrayList<>();

@@ -4,13 +4,11 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * NodoDAO simplificado: solo nombre, sin coordenadas, sin tipo, sin activo
- */
+
 public class NodoDAO {
     private final DatabaseConnection db = DatabaseConnection.getInstance();
 
-    /** Insertar nodo por nombre (evita duplicados) */
+
     public boolean insertarNodo(String nombre) {
         String sql = "INSERT INTO nodo (nombre) VALUES (?) ON CONFLICT(nombre) DO NOTHING";
         try (Connection c = db.getConnection(); 
@@ -23,7 +21,7 @@ public class NodoDAO {
         }
     }
 
-    /** Verificar si existe */
+
     public boolean existeNodo(String nombre) {
         String sql = "SELECT 1 FROM nodo WHERE nombre = ?";
         try (Connection c = db.getConnection(); 
@@ -37,7 +35,7 @@ public class NodoDAO {
         }
     }
 
-    /** Obtener todos los nombres de nodos */
+
     public List<String> obtenerTodosLosNombres() {
         List<String> nombres = new ArrayList<>();
         String sql = "SELECT nombre FROM nodo ORDER BY nombre";
@@ -53,7 +51,7 @@ public class NodoDAO {
         return nombres;
     }
 
-    /** Obtener ID por nombre */
+
     public Integer obtenerIdNodo(String nombre) {
         String sql = "SELECT id FROM nodo WHERE nombre = ?";
         try (Connection c = db.getConnection(); 
@@ -67,7 +65,7 @@ public class NodoDAO {
         }
     }
 
-    /** Guardar nodo si no existe */
+
     public void guardarSiNoExiste(String nombre) {
         if (!existeNodo(nombre)) {
             insertarNodo(nombre);

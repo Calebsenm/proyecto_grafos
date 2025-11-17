@@ -29,12 +29,10 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import java.io.IOException;
 
-/**
- * Controlador principal simplificado - Solo carga CSV->BD->Grafo
- */
+
 public class AppController implements Initializable {
 
-    // === FXML Components ===
+
     @FXML private TextField originFilterField;
     @FXML private ComboBox<String> originComboBox;
     @FXML private TextField destinationFilterField;
@@ -67,7 +65,7 @@ public class AppController implements Initializable {
     @FXML private Canvas graphCanvas;
     @FXML private ScrollPane graphScrollPane;
 
-    // === Graph & DB ===
+  
     private GraphView graphView;
     private Graph currentGraph;
     private Map<String, List<Node>> adjList;
@@ -78,7 +76,7 @@ public class AppController implements Initializable {
     private FilteredList<String> destinationFilteredList;
     private boolean showEdgeLabels = true;
     
-    // Rutas almacenadas para alternar visualización
+  
     private PathResult currentPrimaryPath;
     private PathResult currentAlternativePath;
     private boolean showingAlternative = false;
@@ -89,7 +87,7 @@ public class AppController implements Initializable {
         loader = new GraphDataLoader();
 
         initializeUI();
-        // No cargar datos automáticamente
+
     }
 
     private void initializeUI() {
@@ -113,14 +111,13 @@ public class AppController implements Initializable {
 
     @FXML
     private void loadDatabaseGraph() {
-        // Conectar a la base de datos
+ 
         if (!db.connect()) {
             pathResultArea.setText("Error: No se pudo conectar a la base de datos.");
             return;
         }
         
 
-        // Primero cargar CSV a BD si no hay datos
         if (!db.tieneDatos()) {
             boolean loaded = loader.cargarDesdeCSV();
             if (!loaded) {
@@ -129,7 +126,6 @@ public class AppController implements Initializable {
             }
         }
         
-        // Cargar grafo desde BD
         Graph graph = loader.cargarGrafoCompleto();
         if (graph != null) {
             setupGraph(graph);
@@ -221,25 +217,22 @@ public class AppController implements Initializable {
             return;
         }
 
-        // Calcular ruta principal
         PathResult primaryResult = Dijkstra.dijkstra(o, d, adjList);
         if (primaryResult == null || primaryResult.path == null || primaryResult.path.isEmpty()) {
             pathResultArea.setText("No hay ruta entre " + o + " y " + d);
             return;
         }
 
-        // Calcular ruta alternativa
+
         PathResult alternativeResult = Dijkstra.findAlternativePath(o, d, adjList, primaryResult.path);
 
-        // Guardar las rutas para poder alternar
         currentPrimaryPath = primaryResult;
         currentAlternativePath = alternativeResult;
         showingAlternative = false;
 
-        // Mostrar resultados
         displayResultWithAlternative(primaryResult, alternativeResult);
         
-        // Mostrar/ocultar botón de alternar ruta
+
         if (toggleRouteButton != null) {
             if (alternativeResult != null && alternativeResult.path != null && !alternativeResult.path.isEmpty()) {
                 toggleRouteButton.setVisible(true);
@@ -353,22 +346,18 @@ public class AppController implements Initializable {
             return;
         }
 
-        // Actualizar labels en la interfaz principal
         distanceLabel.setText(String.format("%.2f km", metricas.radio));
         statsLabel.setText(String.format("Radio: %.2f km | Diámetro: %.2f km", 
                 metricas.radio, metricas.diametro));
         
-        // Resaltar los nodos del centro en el grafo (solo nodos, sin aristas)
-        // Hacer esto ANTES de mostrar el modal para que se vea inmediatamente
+
         if (graphView != null && !metricas.centro.isEmpty()) {
             graphView.highlightCenterNodes(metricas.centro);
         }
         
-        // Mostrar el modal con las métricas
+        
         showMetricsDialog(metricas);
         
-        // Asegurar que el resaltado persista después de cerrar el modal
-        // (El resaltado ya debería estar activo, pero lo reaplicamos por si acaso)
         if (graphView != null && !metricas.centro.isEmpty()) {
             graphView.highlightCenterNodes(metricas.centro);
         }

@@ -8,17 +8,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 
-/**
- * Cargador simple de grafo desde CSV y base de datos
- */
 public class GraphDataLoader {
     private final DatabaseConnection db = DatabaseConnection.getInstance();
     private final NodoDAO nodoDAO = new NodoDAO();
     private final AristaDAO aristaDAO = new AristaDAO();
 
-    /**
-     * Cargar datos desde CSV a la base de datos
-     */
+  
     public boolean cargarDesdeCSV() {
         try (InputStream is = getClass().getResourceAsStream("/csv/Grafos.csv");
              BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
@@ -35,7 +30,7 @@ public class GraphDataLoader {
             while ((line = reader.readLine()) != null) {
                 if (isFirstLine) {
                     isFirstLine = false;
-                    continue; // Saltar encabezado
+                    continue; 
                 }
                 
                 line = line.trim();
@@ -47,11 +42,11 @@ public class GraphDataLoader {
                     String nodo2 = parts[1].trim();
                     double distancia = Double.parseDouble(parts[2].trim());
                     
-                    // Guardar nodos si no existen
+                  
                     nodoDAO.guardarSiNoExiste(nodo1);
                     nodoDAO.guardarSiNoExiste(nodo2);
                     
-                    // Guardar arista
+                
                     aristaDAO.guardarSiNoExiste(nodo1, nodo2, distancia);
                     count++;
                 }
@@ -66,9 +61,7 @@ public class GraphDataLoader {
         }
     }
 
-    /**
-     * Cargar grafo completo desde la base de datos
-     */
+   
     public Graph cargarGrafoCompleto() {
         if (!db.isConnected() && !db.connect()) {
             System.err.println("No se pudo conectar a la base de datos");
@@ -85,9 +78,6 @@ public class GraphDataLoader {
         return graph;
     }
 
-    /**
-     * Mostrar estadísticas básicas del grafo
-     */
     public void mostrarEstadisticas() {
         System.out.println("\nESTADÍSTICAS:");
         List<String> nodos = nodoDAO.obtenerTodosLosNombres();

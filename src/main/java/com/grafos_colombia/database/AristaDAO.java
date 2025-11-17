@@ -13,7 +13,7 @@ public class AristaDAO {
 
     public List<Edge> obtenerTodasLasAristas() {
         List<Edge> aristas = new ArrayList<>();
-        Set<String> aristasVistas = new HashSet<>(); // Para evitar duplicados
+        Set<String> aristasVistas = new HashSet<>();
         String sql = "SELECT a.distancia, n1.nombre AS origen_nombre, n2.nombre AS destino_nombre " +
                      "FROM arista a " +
                      "JOIN nodo n1 ON a.origen_id = n1.id " +
@@ -29,7 +29,7 @@ public class AristaDAO {
                 String destino = rs.getString("destino_nombre");
                 double distancia = rs.getDouble("distancia");
                 
-                // Normalizar: crear una clave única para la arista sin importar la dirección
+              
                 String claveArista;
                 if (origen.compareTo(destino) <= 0) {
                     claveArista = origen + "|" + destino;
@@ -37,9 +37,9 @@ public class AristaDAO {
                     claveArista = destino + "|" + origen;
                 }
                 
-                // Solo agregar si no hemos visto esta arista antes
+               
                 if (!aristasVistas.contains(claveArista)) {
-                    // Siempre crear la arista con el nodo menor como origen para consistencia
+                   
                     if (origen.compareTo(destino) <= 0) {
                         aristas.add(new Edge(origen, destino, distancia));
                     } else {
@@ -88,7 +88,7 @@ public class AristaDAO {
     }
 
     public boolean insertarArista(String nodoOrigen, String nodoDestino, double distancia) {
-        // Primero: obtener IDs
+
         NodoDAO nodoDAO = new NodoDAO();
         Integer origenId = nodoDAO.obtenerIdNodo(nodoOrigen);
         Integer destinoId = nodoDAO.obtenerIdNodo(nodoDestino);
@@ -138,10 +138,9 @@ public class AristaDAO {
         }
     }
 
-    /** Guardar arista si no existe (solo una dirección, normalizada) */
+ 
     public void guardarSiNoExiste(String nodo1, String nodo2, double distancia) {
-        // Normalizar: siempre guardar con el nodo lexicográficamente menor como origen
-        // Esto evita duplicados cuando la misma arista viene en direcciones opuestas
+       
         String origen, destino;
         if (nodo1.compareTo(nodo2) <= 0) {
             origen = nodo1;
@@ -151,21 +150,16 @@ public class AristaDAO {
             destino = nodo1;
         }
         
-        // Verificar si ya existe en cualquier dirección y guardar solo si no existe
+      
         if (!existeArista(origen, destino)) {
             insertarArista(origen, destino, distancia);
         }
     }
 
-    /**
-     * Limpia aristas duplicadas de la base de datos, dejando solo una dirección
-     * (normalizada con el nodo menor como origen).
-     * Elimina aristas donde el nombre del origen es mayor que el destino (lexicográficamente).
-     */
+
     public int limpiarDuplicados() {
         int eliminadas = 0;
-        // Eliminar aristas donde existe una arista inversa y el origen > destino
-        // Esto mantiene solo las aristas normalizadas (origen < destino)
+      
         String sql = "DELETE FROM arista WHERE id IN (" +
                      "  SELECT a1.id FROM arista a1 " +
                      "  JOIN nodo n1 ON a1.origen_id = n1.id " +

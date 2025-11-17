@@ -1,6 +1,5 @@
 package com.grafos_colombia.graph;
 
-// A class to store a graph edge
 public class Edge {
 
     private String src, dest;

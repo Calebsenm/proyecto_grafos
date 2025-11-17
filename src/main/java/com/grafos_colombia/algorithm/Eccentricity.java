@@ -4,15 +4,10 @@ import com.grafos_colombia.graph.Node;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Calculates the eccentricity of a node in a graph.
- * The eccentricity of a node 'v' is the greatest distance between 'v' and any other node in the graph.
- */
+
 public class Eccentricity {
 
-    /**
-     * A simple class to hold the result of the eccentricity calculation.
-     */
+  
     public static class EccentricityResult {
         public final double eccentricity;
         public final String farthestNode;
@@ -25,13 +20,7 @@ public class Eccentricity {
         }
     }
 
-    /**
-     * Calculates the eccentricity of the given startNode.
-     *
-     * @param startNode The node for which to calculate eccentricity.
-     * @param adjList   The adjacency list of the graph.
-     * @return An EccentricityResult object containing the eccentricity value and the farthest node.
-     */
+  
     public static EccentricityResult calculate(String startNode, Map<String, List<Node>> adjList) {
         if (!adjList.containsKey(startNode)) {
             return null;
